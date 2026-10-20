@@ -30,6 +30,8 @@ public class Level1Controller : MonoBehaviour
     public int CurrentCustomWaveNumber => currentCustomWaveIndex + 1;
     public Boss CurrentBoss { get; private set; }
     public event System.Action<Boss> BossSpawned;
+    public event System.Action<int, int, string> WaveStarted;
+    public event System.Action<float> BossWarningStarted;
 
     private GameObject spawnedBoss;
 
@@ -68,6 +70,11 @@ public class Level1Controller : MonoBehaviour
             // Wave 1: 4 Enemy, giữ khoảng cách sinh hiện tại trong Inspector.
             enemySpawner.StartEnemyWave(4, enemySpawner.spawnInterval);
 
+            if (enemySpawner.IsWaveRunning)
+            {
+                NotifyWaveStarted(1, 3, "ENEMY ATTACK");
+            }
+
             // Chờ wave kết thúc. Nếu spawner bị hủy hoặc dừng thì không chuyển tiếp.
             yield return new WaitUntil(() => enemySpawner == null || !enemySpawner.IsWaveRunning);
 
@@ -85,6 +92,11 @@ public class Level1Controller : MonoBehaviour
 
             // Asteroid Section: 6 thiên thạch, giữ khoảng cách sinh trong Inspector.
             asteroidSpawner.StartAsteroidWave(6, asteroidSpawner.spawnInterval);
+
+            if (asteroidSpawner.IsWaveRunning)
+            {
+                NotifyWaveStarted(2, 3, "ASTEROID STORM");
+            }
 
             yield return new WaitUntil(() => asteroidSpawner == null || !asteroidSpawner.IsWaveRunning);
 
@@ -104,6 +116,11 @@ public class Level1Controller : MonoBehaviour
             enemySpawner.StartEnemyWave(6, 1.2f);
             asteroidSpawner.StartAsteroidWave(3, 2.2f);
 
+            if (enemySpawner.IsWaveRunning && asteroidSpawner.IsWaveRunning)
+            {
+                NotifyWaveStarted(3, 3, "COMBINED ASSAULT");
+            }
+
             // Chờ cả hai spawner của Wave 2 kết thúc.
             yield return new WaitUntil(() =>
                 enemySpawner == null || asteroidSpawner == null ||
@@ -116,6 +133,7 @@ public class Level1Controller : MonoBehaviour
                 yield break;
             }
 
+            NotifyBossWarning(2.5f);
             yield return new WaitForSeconds(2.5f);
         }
 
@@ -194,6 +212,22 @@ public class Level1Controller : MonoBehaviour
         return interval > 0f && !float.IsNaN(interval) && !float.IsInfinity(interval);
     }
 
+    void NotifyWaveStarted(int number, int total, string waveName)
+    {
+        if (gameResultManager == null || !gameResultManager.IsGameFinished)
+        {
+            WaveStarted?.Invoke(number, total, waveName);
+        }
+    }
+
+    void NotifyBossWarning(float existingDelay)
+    {
+        if (gameResultManager == null || !gameResultManager.IsGameFinished)
+        {
+            BossWarningStarted?.Invoke(existingDelay);
+        }
+    }
+
     IEnumerator RunCustomWaves()
     {
         customWavesComplete = false;
@@ -232,6 +266,8 @@ public class Level1Controller : MonoBehaviour
                 yield break;
             }
 
+            NotifyWaveStarted(i + 1, customWaves.Length, wave.name);
+
             yield return new WaitUntil(() =>
                 (usesEnemies && enemySpawner == null)
                 || (usesAsteroids && asteroidSpawner == null)
@@ -242,6 +278,11 @@ public class Level1Controller : MonoBehaviour
                 || (usesAsteroids && (asteroidSpawner == null || !asteroidSpawner.IsWaveComplete)))
             {
                 yield break;
+            }
+
+            if (i == customWaves.Length - 1)
+            {
+                NotifyBossWarning(wave.delayAfterWave);
             }
 
             if (wave.delayAfterWave > 0f)
