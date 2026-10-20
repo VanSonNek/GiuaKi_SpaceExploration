@@ -2089,8 +2089,40 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Level1Controller
   enemySpawner: {fileID: 1807046662}
   asteroidSpawner: {fileID: 406558783}
-  bossPrefab: {fileID: 3194233194487178939, guid: e17fb117f65d99ffc894f75c441cff07, type: 3}
+  bossPrefab: {fileID: 3194233194487178939, guid: 04d2d7e37832152a5bfff3ac6b67ad80, type: 3}
   gameResultManager: {fileID: 972594135}
+  useCustomWaves: 1
+  customWaves:
+  - name: FIRST STRIKE
+    enemyCount: 7
+    enemySpawnInterval: 1
+    asteroidCount: 0
+    asteroidSpawnInterval: 1
+    delayAfterWave: 2
+  - name: METEOR STORM
+    enemyCount: 0
+    enemySpawnInterval: 1
+    asteroidCount: 8
+    asteroidSpawnInterval: 0.75
+    delayAfterWave: 2
+  - name: GALACTIC ASSAULT
+    enemyCount: 7
+    enemySpawnInterval: 0.95
+    asteroidCount: 4
+    asteroidSpawnInterval: 1.2
+    delayAfterWave: 2
+  - name: HEAVY RESISTANCE
+    enemyCount: 9
+    enemySpawnInterval: 0.85
+    asteroidCount: 5
+    asteroidSpawnInterval: 1
+    delayAfterWave: 2
+  - name: FINAL DEFENSE
+    enemyCount: 10
+    enemySpawnInterval: 0.8
+    asteroidCount: 6
+    asteroidSpawnInterval: 1
+    delayAfterWave: 2.5
 --- !u!4 &991694764
 Transform:
   m_ObjectHideFlags: 0
