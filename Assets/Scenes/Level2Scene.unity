@@ -2023,7 +2023,7 @@ SpriteRenderer:
   m_SortingOrder: -10
   m_MaskInteraction: 0
   m_Sprite: {fileID: -3492764116552408068, guid: 03a17f5f1d1175c85ace97f89a4c36d6, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 0.5, b: 0.9, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -3209,7 +3209,7 @@ SpriteRenderer:
   m_SortingOrder: -10
   m_MaskInteraction: 0
   m_Sprite: {fileID: -3492764116552408068, guid: 03a17f5f1d1175c85ace97f89a4c36d6, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 0.5, b: 0.9, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -3798,7 +3798,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 594990494158c2bd58922c471dad44e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner
-  enemyPrefab: {fileID: 1885287808885983082, guid: f748c062e8797ec23a195a342b42c979, type: 3}
+  enemyPrefab: {fileID: 1038632129537145877, guid: 93690a35101ee8941901f55c748684cd, type: 3}
   spawnInterval: 1.5
 --- !u!4 &1807046663
 Transform:
