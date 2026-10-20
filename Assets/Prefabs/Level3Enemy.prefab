@@ -8,6 +8,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -7394386513276068320, guid: f748c062e8797ec23a195a342b42c979, type: 3}
+      propertyPath: movementType
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -7394386513276068320, guid: f748c062e8797ec23a195a342b42c979, type: 3}
+      propertyPath: zigzagAmplitude
+      value: 0.85
+      objectReference: {fileID: 0}
+    - target: {fileID: -7394386513276068320, guid: f748c062e8797ec23a195a342b42c979, type: 3}
+      propertyPath: zigzagFrequency
+      value: 0.7
+      objectReference: {fileID: 0}
+    - target: {fileID: -7394386513276068320, guid: f748c062e8797ec23a195a342b42c979, type: 3}
+      propertyPath: randomizeMovement
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1885287808885983082, guid: f748c062e8797ec23a195a342b42c979, type: 3}
       propertyPath: m_Name
       value: Level3Enemy
@@ -63,5 +79,34 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1885287808885983082, guid: f748c062e8797ec23a195a342b42c979, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2793386259045942193}
   m_SourcePrefab: {fileID: 100100000, guid: f748c062e8797ec23a195a342b42c979, type: 3}
+--- !u!1 &323388040110349122 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1885287808885983082, guid: f748c062e8797ec23a195a342b42c979, type: 3}
+  m_PrefabInstance: {fileID: 2185658638086249512}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2793386259045942193
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 323388040110349122}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f02a46b7038cd2995b06ce8d389731a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyShooting
+  bulletPrefab: {fileID: 3093938191300208112, guid: fcc45273e249fd56393c9737b8d7c94f, type: 3}
+  canShoot: 1
+  shootingChance: 0.5
+  fireInterval: 2.4
+  bulletSpeed: 3.4
+  initialDelay: 1
+  spreadChance: 0.2
+  spreadAngle: 18
+  muzzleGap: 0.12

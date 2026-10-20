@@ -188,7 +188,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BossShooting
   bossBulletPrefab: {fileID: 270200488492376276, guid: 7deaea9160661e443a1cf7e136341c75, type: 3}
   firePoint: {fileID: 876260593961803830}
-  fireRate: 0.9
+  fireRate: 1.9
+  attackPattern: 1
+  spreadAngle: 22
+  useHealthPhases: 0
+  phase2HealthFraction: 0.5
+  phase2Pattern: 1
+  phase2FireRate: 1.8
+  phase2SpreadAngle: 26
+  phaseTransitionDelay: 0.35
 --- !u!114 &6107023877372112829
 MonoBehaviour:
   m_ObjectHideFlags: 0

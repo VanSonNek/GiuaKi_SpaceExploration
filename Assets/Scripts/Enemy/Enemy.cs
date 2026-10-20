@@ -17,6 +17,8 @@ public class Enemy : MonoBehaviour
     private bool hasHitPlayer;
     private bool isDead;
 
+    public bool IsAlive => !isDead && !hasHitPlayer;
+
     void Start()
     {
         currentHealth = maxHealth;

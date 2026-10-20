@@ -1,5 +1,11 @@
 using UnityEngine;
 
+public enum AttackPattern
+{
+    SingleShot,
+    SpreadShot
+}
+
 public class BossBullet : MonoBehaviour
 {
     [Min(0f)]
@@ -11,16 +17,68 @@ public class BossBullet : MonoBehaviour
     [Min(0.01f)]
     public float lifeTime = 5f;
 
+    public bool destroyOutsideView;
+    public Vector2 Direction => direction;
+
     private bool hasHit;
+    private Vector2 direction = Vector2.down;
+    private Camera mainCamera;
+    private SpriteRenderer spriteRenderer;
+
+    public static void FirePattern(GameObject prefab, Vector3 position, AttackPattern pattern,
+        float spreadAngle, float speedOverride = -1f, Collider2D owner = null,
+        bool cleanupOutsideView = false)
+    {
+        Spawn(prefab, position, 0f, speedOverride, owner, cleanupOutsideView);
+        if (pattern == AttackPattern.SpreadShot)
+        {
+            Spawn(prefab, position, -spreadAngle, speedOverride, owner, cleanupOutsideView);
+            Spawn(prefab, position, spreadAngle, speedOverride, owner, cleanupOutsideView);
+        }
+    }
+
+    static void Spawn(GameObject prefab, Vector3 position, float angle, float speedOverride,
+        Collider2D owner, bool cleanupOutsideView)
+    {
+        Quaternion rotation = Quaternion.Euler(0f, 0f, angle);
+        GameObject instance = Instantiate(prefab, position, rotation);
+        BossBullet bullet = instance.GetComponent<BossBullet>();
+        bullet.direction = rotation * Vector2.down;
+        if (speedOverride >= 0f)
+        {
+            bullet.speed = speedOverride;
+        }
+
+        bullet.destroyOutsideView |= cleanupOutsideView;
+        Collider2D collider = instance.GetComponent<Collider2D>();
+        if (owner != null && collider != null)
+        {
+            Physics2D.IgnoreCollision(collider, owner);
+        }
+    }
 
     void Start()
     {
+        mainCamera = Camera.main;
+        spriteRenderer = GetComponent<SpriteRenderer>();
         Destroy(gameObject, lifeTime);
     }
 
     void Update()
     {
-        transform.position += Vector3.down * speed * Time.deltaTime;
+        transform.position += (Vector3)direction * speed * Time.deltaTime;
+
+        if (destroyOutsideView && mainCamera != null && spriteRenderer != null)
+        {
+            Vector3 bottom = mainCamera.ViewportToWorldPoint(Vector3.zero);
+            Vector3 top = mainCamera.ViewportToWorldPoint(Vector3.one);
+            Bounds bounds = spriteRenderer.bounds;
+            if (bounds.max.y < bottom.y || bounds.min.y > top.y
+                || bounds.max.x < bottom.x || bounds.min.x > top.x)
+            {
+                Destroy(gameObject);
+            }
+        }
     }
 
     void OnTriggerEnter2D(Collider2D other)
