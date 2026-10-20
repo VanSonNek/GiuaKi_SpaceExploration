@@ -2376,8 +2376,34 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Level1Controller
   enemySpawner: {fileID: 1807046662}
   asteroidSpawner: {fileID: 406558783}
-  bossPrefab: {fileID: 3194233194487178939, guid: e17fb117f65d99ffc894f75c441cff07, type: 3}
+  bossPrefab: {fileID: 3194233194487178939, guid: 670f3250198b12c449b2306f605e7e23, type: 3}
   gameResultManager: {fileID: 972594135}
+  useCustomWaves: 1
+  customWaves:
+  - name: ENEMY INVASION
+    enemyCount: 6
+    enemySpawnInterval: 1.1
+    asteroidCount: 0
+    asteroidSpawnInterval: 1
+    delayAfterWave: 2
+  - name: ASTEROID FIELD
+    enemyCount: 0
+    enemySpawnInterval: 1
+    asteroidCount: 8
+    asteroidSpawnInterval: 0.8
+    delayAfterWave: 2
+  - name: COMBINED ATTACK
+    enemyCount: 6
+    enemySpawnInterval: 1
+    asteroidCount: 4
+    asteroidSpawnInterval: 1.25
+    delayAfterWave: 2
+  - name: FINAL ASSAULT
+    enemyCount: 8
+    enemySpawnInterval: 0.85
+    asteroidCount: 5
+    asteroidSpawnInterval: 1.1
+    delayAfterWave: 2.5
 --- !u!4 &991694764
 Transform:
   m_ObjectHideFlags: 0
