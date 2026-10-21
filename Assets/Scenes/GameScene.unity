@@ -2679,8 +2679,107 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Level1Controller
   enemySpawner: {fileID: 1807046662}
   asteroidSpawner: {fileID: 406558783}
+  formationSpawner: {fileID: 1807046664}
   bossPrefab: {fileID: 3194233194487178939, guid: e17fb117f65d99ffc894f75c441cff07, type: 3}
   gameResultManager: {fileID: 972594135}
+  useCustomWaves: 1
+  customWaves:
+  - name: V FORMATION
+    enemyCount: 5
+    enemySpawnInterval: 1
+    asteroidCount: 0
+    asteroidSpawnInterval: 1
+    delayAfterWave: 2
+    formationGroups:
+    - formationType: 0
+      enemyPrefab: {fileID: 1885287808885983082, guid: f748c062e8797ec23a195a342b42c979, type: 3}
+      enemyCount: 5
+      spawnInterval: 0.12
+      horizontalSpacing: 1.4
+      verticalSpacing: 1.2
+      spawnDirection: 0
+      crossToOppositeSide: 0
+      resumeMovementAfterSideEntry: 0
+      overrideMovement: 1
+      movementProfile: 0
+      holdDuration: 0.6
+      squadSize: 3
+      groupInterval: 1
+      entrySpeed: 3
+      clearance: 0.2
+      memberLifetime: 40
+    formationGroupDelay: 0.7
+    useAsteroidCorridor: 0
+    corridorGroupInterval: 2.6
+    corridorWidth: 2.2
+    corridorCenters:
+    - 0.3
+    - 0.7
+    - 0.5
+  - name: ASTEROID CORRIDOR
+    enemyCount: 0
+    enemySpawnInterval: 1
+    asteroidCount: 6
+    asteroidSpawnInterval: 1
+    delayAfterWave: 2
+    formationGroups: []
+    formationGroupDelay: 0.7
+    useAsteroidCorridor: 1
+    corridorGroupInterval: 2.6
+    corridorWidth: 2.2
+    corridorCenters:
+    - 0.3
+    - 0.7
+    - 0.5
+  - name: TWO-SIDE ASSAULT
+    enemyCount: 6
+    enemySpawnInterval: 1
+    asteroidCount: 0
+    asteroidSpawnInterval: 1
+    delayAfterWave: 2.5
+    formationGroups:
+    - formationType: 2
+      enemyPrefab: {fileID: 1885287808885983082, guid: f748c062e8797ec23a195a342b42c979, type: 3}
+      enemyCount: 3
+      spawnInterval: 0.12
+      horizontalSpacing: 1.4
+      verticalSpacing: 1.2
+      spawnDirection: 1
+      crossToOppositeSide: 0
+      resumeMovementAfterSideEntry: 0
+      overrideMovement: 1
+      movementProfile: 0
+      holdDuration: 0.8
+      squadSize: 3
+      groupInterval: 1
+      entrySpeed: 2.5
+      clearance: 0.2
+      memberLifetime: 40
+    - formationType: 2
+      enemyPrefab: {fileID: 1885287808885983082, guid: f748c062e8797ec23a195a342b42c979, type: 3}
+      enemyCount: 3
+      spawnInterval: 0.12
+      horizontalSpacing: 1.4
+      verticalSpacing: 1.2
+      spawnDirection: 2
+      crossToOppositeSide: 0
+      resumeMovementAfterSideEntry: 0
+      overrideMovement: 1
+      movementProfile: 0
+      holdDuration: 0.8
+      squadSize: 3
+      groupInterval: 1
+      entrySpeed: 2.5
+      clearance: 0.2
+      memberLifetime: 40
+    formationGroupDelay: 0.8
+    useAsteroidCorridor: 0
+    corridorGroupInterval: 2.6
+    corridorWidth: 2.2
+    corridorCenters:
+    - 0.3
+    - 0.7
+    - 0.5
 --- !u!4 &991694764
 Transform:
   m_ObjectHideFlags: 0
@@ -3494,6 +3593,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1807046663}
   - component: {fileID: 1807046662}
+  - component: {fileID: 1807046664}
   m_Layer: 0
   m_Name: EnemySpawner
   m_TagString: Untagged
@@ -3530,6 +3630,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1954456406}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1807046664
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1807046661}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac457a23550ee4c85a7909f8ec225b89, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyFormationSpawner
+  settings:
+    formationType: 0
+    enemyPrefab: {fileID: 1885287808885983082, guid: f748c062e8797ec23a195a342b42c979, type: 3}
+    enemyCount: 5
+    spawnInterval: 0.15
+    horizontalSpacing: 1.4
+    verticalSpacing: 1.2
+    spawnDirection: 0
+    crossToOppositeSide: 0
+    resumeMovementAfterSideEntry: 0
+    overrideMovement: 0
+    movementProfile: 0
+    holdDuration: 2
+    squadSize: 3
+    groupInterval: 1
+    entrySpeed: 3
+    clearance: 0.2
+    memberLifetime: 40
+  gameResultManager: {fileID: 972594135}
 --- !u!1 &1824110707
 GameObject:
   m_ObjectHideFlags: 0

@@ -2652,34 +2652,156 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Level1Controller
   enemySpawner: {fileID: 1807046662}
   asteroidSpawner: {fileID: 406558783}
+  formationSpawner: {fileID: 1807046664}
   bossPrefab: {fileID: 3194233194487178939, guid: 670f3250198b12c449b2306f605e7e23, type: 3}
   gameResultManager: {fileID: 972594135}
   useCustomWaves: 1
   customWaves:
-  - name: ENEMY INVASION
+  - name: INVASION SQUADRON
     enemyCount: 6
-    enemySpawnInterval: 1.1
+    enemySpawnInterval: 1
     asteroidCount: 0
     asteroidSpawnInterval: 1
     delayAfterWave: 2
-  - name: ASTEROID FIELD
-    enemyCount: 0
+    formationGroups:
+    - formationType: 1
+      enemyPrefab: {fileID: 1038632129537145877, guid: 93690a35101ee8941901f55c748684cd, type: 3}
+      enemyCount: 6
+      spawnInterval: 0.15
+      horizontalSpacing: 1.4
+      verticalSpacing: 1.2
+      spawnDirection: 0
+      crossToOppositeSide: 0
+      resumeMovementAfterSideEntry: 0
+      overrideMovement: 1
+      movementProfile: 0
+      holdDuration: 0.8
+      squadSize: 3
+      groupInterval: 1
+      entrySpeed: 3
+      clearance: 0.2
+      memberLifetime: 40
+    formationGroupDelay: 0.7
+    useAsteroidCorridor: 0
+    corridorGroupInterval: 2.6
+    corridorWidth: 2.2
+    corridorCenters:
+    - 0.3
+    - 0.7
+    - 0.5
+  - name: CROSSING ZIGZAG
+    enemyCount: 4
     enemySpawnInterval: 1
-    asteroidCount: 8
-    asteroidSpawnInterval: 0.8
+    asteroidCount: 0
+    asteroidSpawnInterval: 1
     delayAfterWave: 2
-  - name: COMBINED ATTACK
-    enemyCount: 6
+    formationGroups:
+    - formationType: 2
+      enemyPrefab: {fileID: 1038632129537145877, guid: 93690a35101ee8941901f55c748684cd, type: 3}
+      enemyCount: 2
+      spawnInterval: 0.15
+      horizontalSpacing: 1.4
+      verticalSpacing: 1.2
+      spawnDirection: 1
+      crossToOppositeSide: 1
+      resumeMovementAfterSideEntry: 1
+      overrideMovement: 1
+      movementProfile: 1
+      holdDuration: 0.35
+      squadSize: 3
+      groupInterval: 1
+      entrySpeed: 2.8
+      clearance: 0.2
+      memberLifetime: 40
+    - formationType: 2
+      enemyPrefab: {fileID: 1038632129537145877, guid: 93690a35101ee8941901f55c748684cd, type: 3}
+      enemyCount: 2
+      spawnInterval: 0.15
+      horizontalSpacing: 1.4
+      verticalSpacing: 1.2
+      spawnDirection: 2
+      crossToOppositeSide: 1
+      resumeMovementAfterSideEntry: 1
+      overrideMovement: 1
+      movementProfile: 1
+      holdDuration: 0.35
+      squadSize: 3
+      groupInterval: 1
+      entrySpeed: 2.8
+      clearance: 0.2
+      memberLifetime: 40
+    formationGroupDelay: 0.8
+    useAsteroidCorridor: 0
+    corridorGroupInterval: 2.6
+    corridorWidth: 2.2
+    corridorCenters:
+    - 0.3
+    - 0.7
+    - 0.5
+  - name: HOLD AND SHOOT
+    enemyCount: 3
     enemySpawnInterval: 1
-    asteroidCount: 4
-    asteroidSpawnInterval: 1.25
+    asteroidCount: 0
+    asteroidSpawnInterval: 1
     delayAfterWave: 2
-  - name: FINAL ASSAULT
-    enemyCount: 8
-    enemySpawnInterval: 0.85
-    asteroidCount: 5
-    asteroidSpawnInterval: 1.1
+    formationGroups:
+    - formationType: 5
+      enemyPrefab: {fileID: 3534791204904074562, guid: b64be1209d2fa52bb81c587dbd044d1e, type: 3}
+      enemyCount: 3
+      spawnInterval: 0.15
+      horizontalSpacing: 1.4
+      verticalSpacing: 1.2
+      spawnDirection: 0
+      crossToOppositeSide: 0
+      resumeMovementAfterSideEntry: 0
+      overrideMovement: 1
+      movementProfile: 0
+      holdDuration: 3.6
+      squadSize: 3
+      groupInterval: 1
+      entrySpeed: 3
+      clearance: 0.2
+      memberLifetime: 40
+    formationGroupDelay: 0.7
+    useAsteroidCorridor: 0
+    corridorGroupInterval: 2.6
+    corridorWidth: 2.2
+    corridorCenters:
+    - 0.3
+    - 0.7
+    - 0.5
+  - name: ESCORT ASSAULT
+    enemyCount: 7
+    enemySpawnInterval: 1
+    asteroidCount: 0
+    asteroidSpawnInterval: 1
     delayAfterWave: 2.5
+    formationGroups:
+    - formationType: 4
+      enemyPrefab: {fileID: 1038632129537145877, guid: 93690a35101ee8941901f55c748684cd, type: 3}
+      enemyCount: 7
+      spawnInterval: 0.15
+      horizontalSpacing: 1.4
+      verticalSpacing: 1.2
+      spawnDirection: 0
+      crossToOppositeSide: 0
+      resumeMovementAfterSideEntry: 0
+      overrideMovement: 1
+      movementProfile: 0
+      holdDuration: 0.8
+      squadSize: 3
+      groupInterval: 1
+      entrySpeed: 3
+      clearance: 0.2
+      memberLifetime: 40
+    formationGroupDelay: 0.7
+    useAsteroidCorridor: 0
+    corridorGroupInterval: 2.6
+    corridorWidth: 2.2
+    corridorCenters:
+    - 0.3
+    - 0.7
+    - 0.5
 --- !u!4 &991694764
 Transform:
   m_ObjectHideFlags: 0
@@ -3779,6 +3901,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1807046663}
   - component: {fileID: 1807046662}
+  - component: {fileID: 1807046664}
   m_Layer: 0
   m_Name: EnemySpawner
   m_TagString: Untagged
@@ -3815,6 +3938,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1954456406}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1807046664
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1807046661}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac457a23550ee4c85a7909f8ec225b89, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyFormationSpawner
+  settings:
+    formationType: 0
+    enemyPrefab: {fileID: 1038632129537145877, guid: 93690a35101ee8941901f55c748684cd, type: 3}
+    enemyCount: 5
+    spawnInterval: 0.15
+    horizontalSpacing: 1.4
+    verticalSpacing: 1.2
+    spawnDirection: 0
+    crossToOppositeSide: 0
+    resumeMovementAfterSideEntry: 0
+    overrideMovement: 0
+    movementProfile: 0
+    holdDuration: 2
+    squadSize: 3
+    groupInterval: 1
+    entrySpeed: 3
+    clearance: 0.2
+    memberLifetime: 40
+  gameResultManager: {fileID: 972594135}
 --- !u!1 &1824110707
 GameObject:
   m_ObjectHideFlags: 0

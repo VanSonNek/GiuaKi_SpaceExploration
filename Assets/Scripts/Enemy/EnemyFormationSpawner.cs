@@ -20,6 +20,8 @@ public sealed class EnemyFormationSettings
     [Min(0f)] public float horizontalSpacing = 1.4f;
     [Min(0f)] public float verticalSpacing = 1.2f;
     public FormationSpawnDirection spawnDirection;
+    public bool crossToOppositeSide;
+    public bool resumeMovementAfterSideEntry;
     public bool overrideMovement;
     public EnemyMovementType movementProfile;
     [Range(0f, 15f)] public float holdDuration = 2f;
@@ -42,6 +44,8 @@ public sealed class EnemyFormationSpawner : MonoBehaviour
     public bool IsWaveComplete { get; private set; }
     public int SpawnedCount { get; private set; }
     public int GroupsStarted { get; private set; }
+    public EnemyFormationType ActiveFormationType { get; private set; }
+    public FormationSpawnDirection ActiveSpawnDirection { get; private set; }
     public event Action<EnemyFormationMember> EnemySpawned;
 
     private readonly List<EnemyFormationMember> members = new List<EnemyFormationMember>();
@@ -50,6 +54,12 @@ public sealed class EnemyFormationSpawner : MonoBehaviour
     private Vector3 footprintOffset;
 
     public bool StartFormation() => StartFormation(settings);
+
+    public bool IsConfigurationValid(EnemyFormationSettings configuration)
+    {
+        view = Camera.main;
+        return Validate(configuration);
+    }
 
     public bool StartFormation(EnemyFormationSettings configuration)
     {
@@ -68,6 +78,8 @@ public sealed class EnemyFormationSpawner : MonoBehaviour
         Bounds b = EnemyFormationMember.MeasureFootprint(configuration.enemyPrefab);
         footprintSize = b.size;
         footprintOffset = b.center - configuration.enemyPrefab.transform.position;
+        ActiveFormationType = configuration.formationType;
+        ActiveSpawnDirection = configuration.spawnDirection;
         members.Clear();
         SpawnedCount = 0;
         GroupsStarted = 0;
@@ -151,19 +163,39 @@ public sealed class EnemyFormationSpawner : MonoBehaviour
                 {
                     bool fromLeft = c.spawnDirection == FormationSpawnDirection.Left
                         || (c.spawnDirection == FormationSpawnDirection.BothSides && i % 2 == 0);
+                    float side = fromLeft ? -1f : 1f;
+                    float span = top.x - bottom.x - 2f * c.clearance - footprintSize.x;
+                    destination.x = centerX + side * (c.crossToOppositeSide ? -1f : 1f)
+                        * span * 0.25f - footprintOffset.x;
                     spawn.x = (fromLeft ? bottom.x - footprintSize.x * 0.5f - c.clearance
                         : top.x + footprintSize.x * 0.5f + c.clearance) - footprintOffset.x;
-                    exit = fromLeft ? 1f : -1f;
+                    exit = c.resumeMovementAfterSideEntry ? 0f : -side;
                 }
                 else
                     spawn.y = top.y + c.clearance + footprintSize.y * 0.5f
                         + slots[i].y - footprintOffset.y;
 
                 float blockedTime = 0f;
+                int relocationAttempts = 0;
                 while (!SpawnIsClear(spawn))
                 {
                     blockedTime += Time.deltaTime;
-                    if (blockedTime >= 5f) { CancelFormation(); yield break; }
+                    if (blockedTime >= 1f)
+                    {
+                        blockedTime = 0f;
+                        if (++relocationAttempts > 4)
+                        {
+                            Debug.LogWarning("Formation could not find a clear offscreen spawn point.", this);
+                            CancelFormation();
+                            yield break;
+                        }
+                        // Keep the same destination/count; move the entry farther outside
+                        // the view instead of silently losing a temporarily blocked group.
+                        if (c.formationType == EnemyFormationType.SideAttack)
+                            spawn.x += Mathf.Sign(spawn.x - centerX) * (footprintSize.x + c.clearance);
+                        else
+                            spawn.y += footprintSize.y + c.clearance;
+                    }
                     yield return null;
                 }
                 while (Time.timeScale <= 0f) yield return null;

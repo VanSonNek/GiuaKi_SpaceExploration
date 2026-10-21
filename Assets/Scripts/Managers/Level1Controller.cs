@@ -5,6 +5,7 @@ public class Level1Controller : MonoBehaviour
 {
     public EnemySpawner enemySpawner;
     public AsteroidSpawner asteroidSpawner;
+    public EnemyFormationSpawner formationSpawner;
     public GameObject bossPrefab;
     public GameResultManager gameResultManager;
 
@@ -17,6 +18,12 @@ public class Level1Controller : MonoBehaviour
         [Min(0)] public int asteroidCount;
         [Min(0.01f)] public float asteroidSpawnInterval = 1f;
         [Min(0f)] public float delayAfterWave = 2f;
+        public EnemyFormationSettings[] formationGroups = new EnemyFormationSettings[0];
+        [Min(0f)] public float formationGroupDelay = 0.7f;
+        public bool useAsteroidCorridor;
+        [Min(0.1f)] public float corridorGroupInterval = 2.6f;
+        [Min(0.1f)] public float corridorWidth = 2.2f;
+        public float[] corridorCenters = new float[] { 0.3f, 0.7f, 0.5f };
     }
 
     [Header("Custom Waves (off keeps the original Level 1 sequence)")]
@@ -32,8 +39,19 @@ public class Level1Controller : MonoBehaviour
     public event System.Action<Boss> BossSpawned;
     public event System.Action<int, int, string> WaveStarted;
     public event System.Action<float> BossWarningStarted;
+    public int WaveStartedCount { get; private set; }
+    public int BossWarningCount { get; private set; }
 
     private GameObject spawnedBoss;
+    private bool formationGroupsComplete;
+    private bool sequenceCancelled;
+    public bool IsSequenceCancelled => sequenceCancelled;
+    bool IsFinished => gameResultManager != null && gameResultManager.IsGameFinished;
+
+    static bool HasFormations(WaveDefinition wave)
+    {
+        return wave.formationGroups != null && wave.formationGroups.Length > 0;
+    }
 
     // Unity tự chạy Start dạng Coroutine khi game bắt đầu.
     IEnumerator Start()
@@ -137,6 +155,8 @@ public class Level1Controller : MonoBehaviour
             yield return new WaitForSeconds(2.5f);
         }
 
+        if (IsFinished || sequenceCancelled) yield break;
+
         if (bossPrefab == null)
         {
             Debug.LogWarning("Hãy gán Boss Prefab cho Level1Controller.", this);
@@ -189,15 +209,22 @@ public class Level1Controller : MonoBehaviour
             WaveDefinition wave = customWaves[i];
 
             if (wave == null || wave.enemyCount < 0 || wave.asteroidCount < 0
-                || (wave.enemyCount == 0 && wave.asteroidCount == 0)
+                || (wave.enemyCount == 0 && wave.asteroidCount == 0 && !HasFormations(wave))
                 || float.IsNaN(wave.delayAfterWave) || float.IsInfinity(wave.delayAfterWave)
                 || wave.delayAfterWave < 0f
-                || (wave.enemyCount > 0 && (enemySpawner == null
+                || (wave.enemyCount > 0 && !HasFormations(wave) && (enemySpawner == null
                     || !enemySpawner.isActiveAndEnabled || enemySpawner.enemyPrefab == null
                     || !IsValidInterval(wave.enemySpawnInterval)))
                 || (wave.asteroidCount > 0 && (asteroidSpawner == null
                     || !asteroidSpawner.isActiveAndEnabled || asteroidSpawner.asteroidPrefab == null
-                    || !IsValidInterval(wave.asteroidSpawnInterval))))
+                    || !IsValidInterval(wave.asteroidSpawnInterval)))
+                || (HasFormations(wave) && (formationSpawner == null
+                    || !formationSpawner.isActiveAndEnabled
+                    || !IsNonNegative(wave.formationGroupDelay)
+                    || !ValidateFormationGroups(wave.formationGroups)))
+                || (wave.useAsteroidCorridor && (wave.asteroidCount < 1 || asteroidSpawner == null
+                    || !asteroidSpawner.IsCorridorConfigurationValid(wave.corridorGroupInterval,
+                        wave.corridorWidth, wave.corridorCenters))))
             {
                 Debug.LogWarning("Cấu hình Custom Wave " + (i + 1) + " không hợp lệ.", this);
                 return false;
@@ -205,6 +232,18 @@ public class Level1Controller : MonoBehaviour
         }
 
         return true;
+    }
+
+    bool ValidateFormationGroups(EnemyFormationSettings[] groups)
+    {
+        foreach (EnemyFormationSettings group in groups)
+            if (!formationSpawner.IsConfigurationValid(group)) return false;
+        return true;
+    }
+
+    static bool IsNonNegative(float value)
+    {
+        return value >= 0f && !float.IsNaN(value) && !float.IsInfinity(value);
     }
 
     static bool IsValidInterval(float interval)
@@ -216,6 +255,7 @@ public class Level1Controller : MonoBehaviour
     {
         if (gameResultManager == null || !gameResultManager.IsGameFinished)
         {
+            WaveStartedCount++;
             WaveStarted?.Invoke(number, total, waveName);
         }
     }
@@ -224,6 +264,7 @@ public class Level1Controller : MonoBehaviour
     {
         if (gameResultManager == null || !gameResultManager.IsGameFinished)
         {
+            BossWarningCount++;
             BossWarningStarted?.Invoke(existingDelay);
         }
     }
@@ -235,7 +276,8 @@ public class Level1Controller : MonoBehaviour
         for (int i = 0; i < customWaves.Length; i++)
         {
             WaveDefinition wave = customWaves[i];
-            bool usesEnemies = wave.enemyCount > 0;
+            bool usesFormations = HasFormations(wave);
+            bool usesEnemies = !usesFormations && wave.enemyCount > 0;
             bool usesAsteroids = wave.asteroidCount > 0;
 
             // Một spawner đang bận hoặc bị dừng không được tính là wave mới.
@@ -248,6 +290,8 @@ public class Level1Controller : MonoBehaviour
                 yield break;
             }
 
+            while (Time.timeScale <= 0f && !IsFinished) yield return null;
+            if (IsFinished || sequenceCancelled) yield break;
             currentCustomWaveIndex = i;
 
             if (usesEnemies)
@@ -257,7 +301,11 @@ public class Level1Controller : MonoBehaviour
 
             if (usesAsteroids)
             {
-                asteroidSpawner.StartAsteroidWave(wave.asteroidCount, wave.asteroidSpawnInterval);
+                if (wave.useAsteroidCorridor)
+                    asteroidSpawner.StartCorridorWave(wave.asteroidCount, wave.corridorGroupInterval,
+                        wave.corridorWidth, wave.corridorCenters);
+                else
+                    asteroidSpawner.StartAsteroidWave(wave.asteroidCount, wave.asteroidSpawnInterval);
             }
 
             if ((usesEnemies && !enemySpawner.IsWaveRunning)
@@ -267,6 +315,12 @@ public class Level1Controller : MonoBehaviour
             }
 
             NotifyWaveStarted(i + 1, customWaves.Length, wave.name);
+
+            if (usesFormations)
+            {
+                yield return RunFormationGroups(wave);
+                if (!formationGroupsComplete || IsFinished) yield break;
+            }
 
             yield return new WaitUntil(() =>
                 (usesEnemies && enemySpawner == null)
@@ -292,5 +346,53 @@ public class Level1Controller : MonoBehaviour
         }
 
         customWavesComplete = true;
+    }
+
+    IEnumerator RunFormationGroups(WaveDefinition wave)
+    {
+        formationGroupsComplete = false;
+        for (int i = 0; i < wave.formationGroups.Length; i++)
+        {
+            while (Time.timeScale <= 0f && !IsFinished) yield return null;
+            if (IsFinished) yield break;
+            if (formationSpawner == null || !formationSpawner.StartFormation(wave.formationGroups[i]))
+            {
+                Debug.LogWarning("Formation group could not start; level sequence stopped safely.", this);
+                StopSequence();
+                yield break;
+            }
+            yield return new WaitUntil(() => IsFinished || formationSpawner == null
+                || !formationSpawner.IsWaveRunning);
+            if (IsFinished) yield break;
+            if (formationSpawner == null || !formationSpawner.IsWaveComplete)
+            {
+                Debug.LogWarning("Formation was cancelled; remaining groups and Boss were not skipped.", this);
+                StopSequence();
+                yield break;
+            }
+            if (i < wave.formationGroups.Length - 1 && wave.formationGroupDelay > 0f)
+                yield return new WaitForSeconds(wave.formationGroupDelay);
+        }
+        formationGroupsComplete = true;
+    }
+
+    void Update()
+    {
+        if (IsFinished && !sequenceCancelled) StopSequence();
+    }
+
+    void StopSequence()
+    {
+        sequenceCancelled = true;
+        StopAllCoroutines();
+        if (formationSpawner != null && formationSpawner.IsWaveRunning)
+            formationSpawner.CancelFormation();
+        if (enemySpawner != null) enemySpawner.enabled = false;
+        if (asteroidSpawner != null) asteroidSpawner.enabled = false;
+    }
+
+    void OnDisable()
+    {
+        if (Application.isPlaying) StopSequence();
     }
 }
