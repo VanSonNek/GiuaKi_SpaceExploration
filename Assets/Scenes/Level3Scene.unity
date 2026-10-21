@@ -2555,6 +2555,8 @@ MonoBehaviour:
     formationGroups:
     - formationType: 2
       enemyPrefab: {fileID: 323388040110349122, guid: 1a7f944614837f0de9bc9241d0de5126, type: 3}
+      visualVariants:
+      - {fileID: 4441190762488180601, guid: c5fa089577647cb5e9a7014a5ecce89e, type: 3}
       enemyCount: 3
       spawnInterval: 0.15
       horizontalSpacing: 1.4
@@ -2572,6 +2574,8 @@ MonoBehaviour:
       memberLifetime: 40
     - formationType: 2
       enemyPrefab: {fileID: 323388040110349122, guid: 1a7f944614837f0de9bc9241d0de5126, type: 3}
+      visualVariants:
+      - {fileID: 4441190762488180601, guid: c5fa089577647cb5e9a7014a5ecce89e, type: 3}
       enemyCount: 3
       spawnInterval: 0.15
       horizontalSpacing: 1.4
@@ -2604,6 +2608,8 @@ MonoBehaviour:
     formationGroups:
     - formationType: 3
       enemyPrefab: {fileID: 323388040110349122, guid: 1a7f944614837f0de9bc9241d0de5126, type: 3}
+      visualVariants:
+      - {fileID: 4441190762488180601, guid: c5fa089577647cb5e9a7014a5ecce89e, type: 3}
       enemyCount: 4
       spawnInterval: 0.12
       horizontalSpacing: 1.4
@@ -2621,6 +2627,8 @@ MonoBehaviour:
       memberLifetime: 40
     - formationType: 3
       enemyPrefab: {fileID: 323388040110349122, guid: 1a7f944614837f0de9bc9241d0de5126, type: 3}
+      visualVariants:
+      - {fileID: 4441190762488180601, guid: c5fa089577647cb5e9a7014a5ecce89e, type: 3}
       enemyCount: 4
       spawnInterval: 0.12
       horizontalSpacing: 1.4
@@ -2653,6 +2661,8 @@ MonoBehaviour:
     formationGroups:
     - formationType: 5
       enemyPrefab: {fileID: 7275922971861782234, guid: 4a4a6b07ffdedf56c9876b9548f636b3, type: 3}
+      visualVariants:
+      - {fileID: 4058148032371625159, guid: 4162425e3c00d224e800c3936ca8ffc2, type: 3}
       enemyCount: 3
       spawnInterval: 0.15
       horizontalSpacing: 1.4
@@ -2685,6 +2695,8 @@ MonoBehaviour:
     formationGroups:
     - formationType: 3
       enemyPrefab: {fileID: 323388040110349122, guid: 1a7f944614837f0de9bc9241d0de5126, type: 3}
+      visualVariants:
+      - {fileID: 4441190762488180601, guid: c5fa089577647cb5e9a7014a5ecce89e, type: 3}
       enemyCount: 3
       spawnInterval: 0.15
       horizontalSpacing: 1.4
@@ -2702,6 +2714,8 @@ MonoBehaviour:
       memberLifetime: 40
     - formationType: 1
       enemyPrefab: {fileID: 323388040110349122, guid: 1a7f944614837f0de9bc9241d0de5126, type: 3}
+      visualVariants:
+      - {fileID: 4441190762488180601, guid: c5fa089577647cb5e9a7014a5ecce89e, type: 3}
       enemyCount: 2
       spawnInterval: 0.15
       horizontalSpacing: 1.4
@@ -2719,6 +2733,8 @@ MonoBehaviour:
       memberLifetime: 40
     - formationType: 2
       enemyPrefab: {fileID: 323388040110349122, guid: 1a7f944614837f0de9bc9241d0de5126, type: 3}
+      visualVariants:
+      - {fileID: 4441190762488180601, guid: c5fa089577647cb5e9a7014a5ecce89e, type: 3}
       enemyCount: 2
       spawnInterval: 0.15
       horizontalSpacing: 1.4
@@ -2749,6 +2765,8 @@ MonoBehaviour:
     formationGroups:
     - formationType: 0
       enemyPrefab: {fileID: 323388040110349122, guid: 1a7f944614837f0de9bc9241d0de5126, type: 3}
+      visualVariants:
+      - {fileID: 4441190762488180601, guid: c5fa089577647cb5e9a7014a5ecce89e, type: 3}
       enemyCount: 3
       spawnInterval: 0.15
       horizontalSpacing: 1.4
@@ -2766,6 +2784,8 @@ MonoBehaviour:
       memberLifetime: 40
     - formationType: 4
       enemyPrefab: {fileID: 323388040110349122, guid: 1a7f944614837f0de9bc9241d0de5126, type: 3}
+      visualVariants:
+      - {fileID: 4441190762488180601, guid: c5fa089577647cb5e9a7014a5ecce89e, type: 3}
       enemyCount: 5
       spawnInterval: 0.15
       horizontalSpacing: 1.4
@@ -2783,6 +2803,8 @@ MonoBehaviour:
       memberLifetime: 40
     - formationType: 5
       enemyPrefab: {fileID: 7275922971861782234, guid: 4a4a6b07ffdedf56c9876b9548f636b3, type: 3}
+      visualVariants:
+      - {fileID: 4058148032371625159, guid: 4162425e3c00d224e800c3936ca8ffc2, type: 3}
       enemyCount: 2
       spawnInterval: 0.15
       horizontalSpacing: 1.4
@@ -3781,6 +3803,8 @@ MonoBehaviour:
   settings:
     formationType: 0
     enemyPrefab: {fileID: 323388040110349122, guid: 1a7f944614837f0de9bc9241d0de5126, type: 3}
+    visualVariants:
+    - {fileID: 4441190762488180601, guid: c5fa089577647cb5e9a7014a5ecce89e, type: 3}
     enemyCount: 5
     spawnInterval: 0.15
     horizontalSpacing: 1.4

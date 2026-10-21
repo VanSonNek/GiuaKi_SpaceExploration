@@ -2666,6 +2666,8 @@ MonoBehaviour:
     formationGroups:
     - formationType: 1
       enemyPrefab: {fileID: 1038632129537145877, guid: 93690a35101ee8941901f55c748684cd, type: 3}
+      visualVariants:
+      - {fileID: 5232039796441275806, guid: 9eea0ca62d0848dbcb48b6e7157ceb2f, type: 3}
       enemyCount: 6
       spawnInterval: 0.15
       horizontalSpacing: 1.4
@@ -2698,6 +2700,8 @@ MonoBehaviour:
     formationGroups:
     - formationType: 2
       enemyPrefab: {fileID: 1038632129537145877, guid: 93690a35101ee8941901f55c748684cd, type: 3}
+      visualVariants:
+      - {fileID: 5232039796441275806, guid: 9eea0ca62d0848dbcb48b6e7157ceb2f, type: 3}
       enemyCount: 2
       spawnInterval: 0.15
       horizontalSpacing: 1.4
@@ -2715,6 +2719,8 @@ MonoBehaviour:
       memberLifetime: 40
     - formationType: 2
       enemyPrefab: {fileID: 1038632129537145877, guid: 93690a35101ee8941901f55c748684cd, type: 3}
+      visualVariants:
+      - {fileID: 5232039796441275806, guid: 9eea0ca62d0848dbcb48b6e7157ceb2f, type: 3}
       enemyCount: 2
       spawnInterval: 0.15
       horizontalSpacing: 1.4
@@ -2747,6 +2753,8 @@ MonoBehaviour:
     formationGroups:
     - formationType: 5
       enemyPrefab: {fileID: 3534791204904074562, guid: b64be1209d2fa52bb81c587dbd044d1e, type: 3}
+      visualVariants:
+      - {fileID: 4026893480818343313, guid: d7486edd6a17a70a48a0fa8226e0d32f, type: 3}
       enemyCount: 3
       spawnInterval: 0.15
       horizontalSpacing: 1.4
@@ -2779,6 +2787,8 @@ MonoBehaviour:
     formationGroups:
     - formationType: 4
       enemyPrefab: {fileID: 1038632129537145877, guid: 93690a35101ee8941901f55c748684cd, type: 3}
+      visualVariants:
+      - {fileID: 5232039796441275806, guid: 9eea0ca62d0848dbcb48b6e7157ceb2f, type: 3}
       enemyCount: 7
       spawnInterval: 0.15
       horizontalSpacing: 1.4
@@ -3953,6 +3963,8 @@ MonoBehaviour:
   settings:
     formationType: 0
     enemyPrefab: {fileID: 1038632129537145877, guid: 93690a35101ee8941901f55c748684cd, type: 3}
+    visualVariants:
+    - {fileID: 5232039796441275806, guid: 9eea0ca62d0848dbcb48b6e7157ceb2f, type: 3}
     enemyCount: 5
     spawnInterval: 0.15
     horizontalSpacing: 1.4

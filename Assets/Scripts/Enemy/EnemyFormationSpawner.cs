@@ -15,6 +15,8 @@ public sealed class EnemyFormationSettings
 {
     public EnemyFormationType formationType;
     public GameObject enemyPrefab;
+    [Tooltip("Optional cosmetic prefab variants with the same gameplay settings. The base prefab remains in the rotation.")]
+    public GameObject[] visualVariants = new GameObject[0];
     [Range(1, 128)] public int enemyCount = 5;
     [Min(0f)] public float spawnInterval = 0.15f;
     [Min(0f)] public float horizontalSpacing = 1.4f;
@@ -32,7 +34,12 @@ public sealed class EnemyFormationSettings
     [Range(5f, 90f)] public float memberLifetime = 40f;
 
     // Snapshot prevents Inspector/caller changes halfway through a sequence.
-    public EnemyFormationSettings Snapshot() => (EnemyFormationSettings)MemberwiseClone();
+    public EnemyFormationSettings Snapshot()
+    {
+        var copy = (EnemyFormationSettings)MemberwiseClone();
+        copy.visualVariants = visualVariants == null ? null : (GameObject[])visualVariants.Clone();
+        return copy;
+    }
 }
 
 // Opt-in API for a future wave controller. Never auto-starts or persists across scenes.
@@ -75,9 +82,9 @@ public sealed class EnemyFormationSpawner : MonoBehaviour
             gameResultManager = FindAnyObjectByType<GameResultManager>();
         if (gameResultManager != null && gameResultManager.IsGameFinished) return false;
 
-        Bounds b = EnemyFormationMember.MeasureFootprint(configuration.enemyPrefab);
+        Bounds b = FormationFootprint(configuration);
         footprintSize = b.size;
-        footprintOffset = b.center - configuration.enemyPrefab.transform.position;
+        footprintOffset = b.center;
         ActiveFormationType = configuration.formationType;
         ActiveSpawnDirection = configuration.spawnDirection;
         members.Clear();
@@ -92,14 +99,7 @@ public sealed class EnemyFormationSpawner : MonoBehaviour
     {
         if (c == null || view == null || !view.orthographic
             || Mathf.Abs(Vector3.Dot(view.transform.forward, Vector3.forward)) < 0.999f
-            || c.enemyPrefab == null || !c.enemyPrefab.activeSelf
-            || c.enemyPrefab.GetComponent<Enemy>() == null
-            || c.enemyPrefab.GetComponent<EnemyMovement>() == null
-            || !c.enemyPrefab.GetComponent<EnemyMovement>().enabled
-            || c.enemyPrefab.GetComponent<SpriteRenderer>() == null
-            || c.enemyPrefab.GetComponent<SpriteRenderer>().sprite == null
-            || c.enemyPrefab.GetComponent<EnemyFormationMember>() != null
-            || !Positive(c.enemyPrefab.GetComponent<EnemyMovement>().moveSpeed)
+            || !ValidEnemyPrefab(c.enemyPrefab)
             || c.enemyCount < 1 || c.enemyCount > 128 || c.squadSize < 1 || c.squadSize > 16
             || !NonNegative(c.spawnInterval) || !NonNegative(c.groupInterval)
             || !NonNegative(c.horizontalSpacing) || !NonNegative(c.verticalSpacing)
@@ -109,12 +109,52 @@ public sealed class EnemyFormationSpawner : MonoBehaviour
             || !Enum.IsDefined(typeof(EnemyFormationType), c.formationType)
             || !Enum.IsDefined(typeof(FormationSpawnDirection), c.spawnDirection)
             || !Enum.IsDefined(typeof(EnemyMovementType), c.movementProfile)) return false;
-        Bounds b = EnemyFormationMember.MeasureFootprint(c.enemyPrefab);
+        if (c.visualVariants != null)
+            foreach (GameObject variant in c.visualVariants)
+                if (!ValidEnemyPrefab(variant)) return false;
+        Bounds b = FormationFootprint(c);
         Vector3 bottom = view.ViewportToWorldPoint(Vector3.zero);
         Vector3 top = view.ViewportToWorldPoint(Vector3.one);
         // Reserve a safe upper band. Refuse impossible layouts rather than overlap ships.
         return b.size.x + 2f * c.clearance < top.x - bottom.x
             && b.size.y + 2f * c.clearance < (top.y - bottom.y) * 0.45f;
+    }
+
+    static bool ValidEnemyPrefab(GameObject prefab)
+    {
+        return prefab != null && prefab.activeSelf
+            && prefab.GetComponent<Enemy>() != null
+            && prefab.GetComponent<EnemyMovement>() != null
+            && prefab.GetComponent<EnemyMovement>().enabled
+            && Positive(prefab.GetComponent<EnemyMovement>().moveSpeed)
+            && prefab.GetComponent<SpriteRenderer>() != null
+            && prefab.GetComponent<SpriteRenderer>().sprite != null
+            && prefab.GetComponent<EnemyFormationMember>() == null;
+    }
+
+    static Bounds FormationFootprint(EnemyFormationSettings c)
+    {
+        Bounds result = EnemyFormationMember.MeasureFootprint(c.enemyPrefab);
+        result.center -= c.enemyPrefab.transform.position;
+        if (c.visualVariants != null)
+            foreach (GameObject variant in c.visualVariants)
+            {
+                Bounds bounds = EnemyFormationMember.MeasureFootprint(variant);
+                bounds.center -= variant.transform.position;
+                result.Encapsulate(bounds.min);
+                result.Encapsulate(bounds.max);
+            }
+        return result;
+    }
+
+    static GameObject PrefabForSlot(EnemyFormationSettings c, int index)
+    {
+        if (c.visualVariants == null || c.visualVariants.Length == 0) return c.enemyPrefab;
+        // Keep matching wing/escort pairs, while retaining the original center ship.
+        if (c.formationType == EnemyFormationType.VFormation
+            || c.formationType == EnemyFormationType.EscortFormation) index = (index + 1) / 2;
+        int slot = index % (c.visualVariants.Length + 1);
+        return slot == 0 ? c.enemyPrefab : c.visualVariants[slot - 1];
     }
 
     static bool Positive(float v) => v > 0f && !float.IsNaN(v) && !float.IsInfinity(v);
@@ -199,7 +239,7 @@ public sealed class EnemyFormationSpawner : MonoBehaviour
                     yield return null;
                 }
                 while (Time.timeScale <= 0f) yield return null;
-                GameObject enemy = Instantiate(c.enemyPrefab, spawn, Quaternion.identity);
+                GameObject enemy = Instantiate(PrefabForSlot(c, SpawnedCount), spawn, Quaternion.identity);
                 EnemyFormationMember member = enemy.AddComponent<EnemyFormationMember>();
                 member.Initialize(view, destination, c.entrySpeed, c.memberLifetime,
                     exit, c.overrideMovement, c.movementProfile);
