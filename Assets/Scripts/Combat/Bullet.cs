@@ -21,8 +21,8 @@ public class Bullet : MonoBehaviour
 
     void Update()
     {
-        // Bay thẳng lên theo trục Y của thế giới.
-        transform.position += Vector3.up * speed * Time.deltaTime;
+        // Tia giữa bay lên; tia ngoài bay theo góc được gán khi tạo đạn.
+        transform.position += transform.up * speed * Time.deltaTime;
     }
 
     void OnTriggerEnter2D(Collider2D other)
