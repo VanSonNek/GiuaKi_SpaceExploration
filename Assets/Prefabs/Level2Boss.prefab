@@ -191,6 +191,12 @@ MonoBehaviour:
   fireRate: 1.9
   attackPattern: 1
   spreadAngle: 22
+  useAttackCycle: 1
+  attackCycle: 010000000200000003000000
+  initialAttackDelay: 0.35
+  aimedShotWarningTime: 0.5
+  burstShotCount: 3
+  burstShotInterval: 0.3
   useHealthPhases: 0
   phase2HealthFraction: 0.5
   phase2Pattern: 1

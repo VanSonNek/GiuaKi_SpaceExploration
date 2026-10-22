@@ -189,6 +189,20 @@ MonoBehaviour:
   bossBulletPrefab: {fileID: 270200488492376276, guid: 7deaea9160661e443a1cf7e136341c75, type: 3}
   firePoint: {fileID: 876260593961803830}
   fireRate: 1.2
+  attackPattern: 0
+  spreadAngle: 22
+  useAttackCycle: 1
+  attackCycle: 0000000002000000
+  initialAttackDelay: 0.35
+  aimedShotWarningTime: 0.5
+  burstShotCount: 3
+  burstShotInterval: 0.3
+  useHealthPhases: 0
+  phase2HealthFraction: 0.5
+  phase2Pattern: 1
+  phase2FireRate: 1.8
+  phase2SpreadAngle: 26
+  phaseTransitionDelay: 0.35
 --- !u!114 &6107023877372112829
 MonoBehaviour:
   m_ObjectHideFlags: 0

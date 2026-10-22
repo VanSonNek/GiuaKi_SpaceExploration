@@ -2,8 +2,10 @@ using UnityEngine;
 
 public enum AttackPattern
 {
-    SingleShot,
-    SpreadShot
+    SingleShot = 0,
+    SpreadShot = 1,
+    AimedShot = 2,
+    BurstShot = 3
 }
 
 public class BossBullet : MonoBehaviour
@@ -35,6 +37,14 @@ public class BossBullet : MonoBehaviour
             Spawn(prefab, position, -spreadAngle, speedOverride, owner, cleanupOutsideView);
             Spawn(prefab, position, spreadAngle, speedOverride, owner, cleanupOutsideView);
         }
+    }
+
+    public static void FireDirected(GameObject prefab, Vector3 position, Vector2 direction,
+        Collider2D owner = null, bool cleanupOutsideView = true)
+    {
+        if (direction.sqrMagnitude < 0.0001f) direction = Vector2.down;
+        float angle = Mathf.Atan2(direction.x, -direction.y) * Mathf.Rad2Deg;
+        Spawn(prefab, position, angle, -1f, owner, cleanupOutsideView);
     }
 
     static void Spawn(GameObject prefab, Vector3 position, float angle, float speedOverride,
