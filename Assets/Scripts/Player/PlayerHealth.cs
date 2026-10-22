@@ -19,6 +19,15 @@ public class PlayerHealth : MonoBehaviour
         currentHealth = maxHealth;
     }
 
+    public int Heal(int amount)
+    {
+        if (isDead || currentHealth <= 0 || amount <= 0) return 0;
+
+        int restored = Mathf.Min(amount, Mathf.Max(0, maxHealth - currentHealth));
+        currentHealth += restored;
+        return restored;
+    }
+
     public void TakeDamage(int damage)
     {
         if (isDead)
