@@ -72,6 +72,10 @@ PrefabInstance:
       propertyPath: destroyOutsideView
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3241830050515513610, guid: 7deaea9160661e443a1cf7e136341c75, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: c8ef6941e89bc4bf8ad8e0e2d220403f, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

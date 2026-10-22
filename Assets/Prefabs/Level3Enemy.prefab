@@ -101,7 +101,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f02a46b7038cd2995b06ce8d389731a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyShooting
-  bulletPrefab: {fileID: 3093938191300208112, guid: fcc45273e249fd56393c9737b8d7c94f, type: 3}
+  bulletPrefab: {fileID: 7403161962574350164, guid: 66876646580b97d0a8a15bebaf33f299, type: 3}
   canShoot: 1
   shootingChance: 0.5
   fireInterval: 2.4

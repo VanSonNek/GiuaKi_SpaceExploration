@@ -186,7 +186,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f670239cc376c39279a8033903843982, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BossShooting
-  bossBulletPrefab: {fileID: 270200488492376276, guid: 7deaea9160661e443a1cf7e136341c75, type: 3}
+  bossBulletPrefab: {fileID: 7118444508918718501, guid: 0370be03d19aa09dea58fd7d43718e96, type: 3}
   firePoint: {fileID: 876260593961803830}
   fireRate: 1.35
   attackPattern: 0
