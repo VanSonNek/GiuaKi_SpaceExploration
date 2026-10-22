@@ -19,6 +19,9 @@ public class Enemy : MonoBehaviour
 
     public bool IsAlive => !isDead && !hasHitPlayer;
 
+    // Only Bullet currently calls TakeDamage; contact/despawn never raise this event.
+    public static event System.Action<Enemy> Defeated;
+
     void Start()
     {
         currentHealth = maxHealth;
@@ -55,6 +58,7 @@ public class Enemy : MonoBehaviour
                 Instantiate(deathEffectPrefab, transform.position, Quaternion.identity);
             }
 
+            Defeated?.Invoke(this);
             Destroy(gameObject);
         }
     }

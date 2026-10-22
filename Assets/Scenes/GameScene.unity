@@ -3589,6 +3589,71 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
+--- !u!1 &1748902999
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1748903001}
+  - component: {fileID: 1748903000}
+  m_Layer: 0
+  m_Name: PowerUpDropManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1748903000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1748902999}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8fd567d6f2fe9fd29f6167f6f3eaaa5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PowerUpDropManager
+  levelController: {fileID: 991694763}
+  resultManager: {fileID: 972594135}
+  player: {fileID: 30127261}
+  gameplayCamera: {fileID: 519420031}
+  weaponUpgradePrefab: {fileID: 2668946949506933870, guid: 74eeb0c4e9737462a9314bdbfbc7e8c2, type: 3}
+  healthPickupPrefab: {fileID: 7546526867102682, guid: e2cd99303f2cab08bac360b2d4834df9, type: 3}
+  weaponDropChance: 0.08
+  healthDropChance: 0.05
+  maxRandomDropsPerWave: 1
+  suppressRandomInScheduledWaves: 1
+  scheduledDrops:
+  - waveNumber: 1
+    type: 0
+    delay: 3
+    viewportX: 0.5
+    onlyWhenHealthMissing: 0
+  - waveNumber: 3
+    type: 0
+    delay: 3
+    viewportX: 0.5
+    onlyWhenHealthMissing: 0
+--- !u!4 &1748903001
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1748902999}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1807046661
 GameObject:
   m_ObjectHideFlags: 0
@@ -4416,3 +4481,4 @@ SceneRoots:
   - {fileID: 1387943293}
   - {fileID: 1954456406}
   - {fileID: 1916205228}
+  - {fileID: 1748903001}
