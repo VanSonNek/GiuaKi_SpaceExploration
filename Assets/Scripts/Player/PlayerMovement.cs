@@ -1,5 +1,6 @@
 using UnityEngine;
 
+// [BAO VE] Điều khiển máy bay bằng input, đổi Sprite theo hướng và giới hạn vị trí trong Camera.
 public class PlayerMovement : MonoBehaviour
 {
     public float moveSpeed = 5f;
@@ -18,8 +19,10 @@ public class PlayerMovement : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
+    // [BAO VE] Đọc Horizontal/Vertical; normalized tránh đi chéo nhanh hơn, moveSpeed * deltaTime tính quãng đường mỗi frame.
     void Update()
     {
+        // [BAO VE - PLAYER NHAN PHIM] Horizontal/Vertical đang được InputManager ánh xạ A/D, W/S và các phím mũi tên.
         float horizontal = Input.GetAxisRaw("Horizontal");
         float vertical = Input.GetAxisRaw("Vertical");
 
@@ -34,6 +37,7 @@ public class PlayerMovement : MonoBehaviour
         LimitPlayerInsideScreen();
     }
 
+    // [BAO VE] Chọn leftSprite, rightSprite hoặc straightSprite theo dấu của input ngang.
     void ChangeShipSprite(float horizontal)
     {
         if (horizontal < 0)
@@ -50,6 +54,7 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    // [BAO VE] Đổi hai góc Viewport sang tọa độ thế giới; Mathf.Clamp có tính nửa kích thước Sprite để tàu không vượt màn hình.
     void LimitPlayerInsideScreen()
     {
         Vector3 bottomLeft =
@@ -58,11 +63,13 @@ public class PlayerMovement : MonoBehaviour
         Vector3 topRight =
             mainCamera.ViewportToWorldPoint(new Vector3(1, 1, 0));
 
+        // [BAO VE - PLAYER SPRITE BOUNDS] bounds.extents là nửa kích thước Sprite trong thế giới, đã tính Scale để chừa mép thân tàu.
         float halfWidth = spriteRenderer.bounds.extents.x;
         float halfHeight = spriteRenderer.bounds.extents.y;
 
         Vector3 position = transform.position;
 
+        // [BAO VE - PLAYER CLAMP CAMERA] Clamp giới hạn tọa độ vào khoảng min/max; X và Y đều chừa nửa kích thước Sprite ở hai mép.
         position.x = Mathf.Clamp(
             position.x,
             bottomLeft.x + halfWidth,

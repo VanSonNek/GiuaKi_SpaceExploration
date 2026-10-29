@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
+// [BAO VE] Điều phối Wave và Boss dùng chung cho các Level; tên class giữ từ Level 1, customWaves chứa kịch bản theo từng Scene.
 public class Level1Controller : MonoBehaviour
 {
     public EnemySpawner enemySpawner;
@@ -10,6 +11,7 @@ public class Level1Controller : MonoBehaviour
     public GameResultManager gameResultManager;
 
     [System.Serializable]
+    // [BAO VE] Một Wave cấu hình Enemy, Asteroid, các nhóm Formation và thời gian nghỉ; dữ liệu được gán trong Inspector.
     public class WaveDefinition
     {
         public string name;
@@ -28,6 +30,7 @@ public class Level1Controller : MonoBehaviour
 
     [Header("Custom Waves (off keeps the original Level 1 sequence)")]
     [SerializeField] private bool useCustomWaves;
+    // [BAO VE - DU LIEU WAVE] Độ dài customWaves là số Wave của Scene; Enemy thường dùng enemyCount, đội hình dùng enemyCount trong từng formationGroups.
     [SerializeField] private WaveDefinition[] customWaves = new WaveDefinition[0];
 
     private bool sequenceStarted;
@@ -54,6 +57,7 @@ public class Level1Controller : MonoBehaviour
     }
 
     // Unity tự chạy Start dạng Coroutine khi game bắt đầu.
+    // [BAO VE] Chạy chuỗi Wave một lần: useCustomWaves chọn kịch bản Scene, ngược lại dùng trình tự Level 1 cũ.
     IEnumerator Start()
     {
         if (sequenceStarted)
@@ -130,7 +134,7 @@ public class Level1Controller : MonoBehaviour
                 yield break;
             }
 
-            // Wave 2: cả hai Coroutine bắt đầu cùng giai đoạn.
+            // Trình tự cũ, Wave 3: cả hai Coroutine bắt đầu cùng giai đoạn.
             enemySpawner.StartEnemyWave(6, 1.2f);
             asteroidSpawner.StartAsteroidWave(3, 2.2f);
 
@@ -139,12 +143,12 @@ public class Level1Controller : MonoBehaviour
                 NotifyWaveStarted(3, 3, "COMBINED ASSAULT");
             }
 
-            // Chờ cả hai spawner của Wave 2 kết thúc.
+            // Chờ cả hai spawner của Wave 3 trong trình tự cũ kết thúc.
             yield return new WaitUntil(() =>
                 enemySpawner == null || asteroidSpawner == null ||
                 (!enemySpawner.IsWaveRunning && !asteroidSpawner.IsWaveRunning));
 
-            // Spawner bị dừng hoặc hủy giữa chừng không được tính là hoàn tất Wave 2.
+            // Spawner bị dừng hoặc hủy giữa chừng không được tính là hoàn tất Wave 3 trong trình tự cũ.
             if (enemySpawner == null || asteroidSpawner == null
                 || !enemySpawner.IsWaveComplete || !asteroidSpawner.IsWaveComplete)
             {
@@ -164,6 +168,7 @@ public class Level1Controller : MonoBehaviour
         }
 
         // BossMovement sẽ tự đặt Boss phía trên camera khi Start chạy.
+        // [BAO VE] Sau khi hoàn tất các Wave và thời gian cảnh báo, Instantiate bossPrefab của Scene; BossMovement tự đưa Boss vào màn hình.
         spawnedBoss = Instantiate(bossPrefab, Vector3.zero, Quaternion.identity);
         CurrentBoss = spawnedBoss.GetComponent<Boss>();
 
@@ -172,6 +177,7 @@ public class Level1Controller : MonoBehaviour
 
         if (CurrentBoss != null)
         {
+            // [BAO VE] Báo Boss đã có HP sau một frame để BossHealthUI và các bên nghe sự kiện nhận đúng Boss.
             BossSpawned?.Invoke(CurrentBoss);
         }
         else if (spawnedBoss != null)
@@ -180,6 +186,7 @@ public class Level1Controller : MonoBehaviour
         }
 
         // Chỉ đợi Boss do controller này sinh ra bị Destroy.
+        // [BAO VE] Chờ chính Boss vừa sinh bị Destroy rồi gọi ShowVictory nếu trận chưa kết thúc.
         yield return new WaitUntil(() => spawnedBoss == null);
 
         if (gameResultManager == null)
@@ -191,10 +198,12 @@ public class Level1Controller : MonoBehaviour
         if (!gameResultManager.IsGameFinished)
         {
             Debug.Log("LEVEL 1 COMPLETE");
+            // [BAO VE - BOSS KET THUC VA VICTORY] Chỉ gọi sau khi Boss do controller sinh đã bị hủy và IsGameFinished vẫn false.
             gameResultManager.ShowVictory();
         }
     }
 
+    // [BAO VE] Kiểm tra dữ liệu từng Wave và các Spawner/Prefab trước khi chạy; cấu hình không hợp lệ thì dừng chuỗi.
     bool ValidateCustomWaves()
     {
         if (customWaves == null || customWaves.Length == 0
@@ -251,6 +260,7 @@ public class Level1Controller : MonoBehaviour
         return interval > 0f && !float.IsNaN(interval) && !float.IsInfinity(interval);
     }
 
+    // [BAO VE] Phát WaveStarted với số thứ tự, tổng Wave và tên; UI thông báo và Power-up dùng chung sự kiện này.
     void NotifyWaveStarted(int number, int total, string waveName)
     {
         if (gameResultManager == null || !gameResultManager.IsGameFinished)
@@ -260,6 +270,7 @@ public class Level1Controller : MonoBehaviour
         }
     }
 
+    // [BAO VE] Phát BossWarningStarted theo thời gian nghỉ sẵn có; banner chỉ hiển thị, không tự thay đổi thời điểm sinh Boss.
     void NotifyBossWarning(float existingDelay)
     {
         if (gameResultManager == null || !gameResultManager.IsGameFinished)
@@ -269,6 +280,7 @@ public class Level1Controller : MonoBehaviour
         }
     }
 
+    // [BAO VE] Duyệt customWaves, chạy Enemy hoặc Formation cùng Asteroid; chờ các phần hoàn tất thật sự rồi nghỉ và chuyển Wave.
     IEnumerator RunCustomWaves()
     {
         customWavesComplete = false;
@@ -292,10 +304,12 @@ public class Level1Controller : MonoBehaviour
 
             while (Time.timeScale <= 0f && !IsFinished) yield return null;
             if (IsFinished || sequenceCancelled) yield break;
+            // [BAO VE - BAT DAU WAVE] Cập nhật chỉ số Wave hiện tại sau khi qua kiểm tra Pause/kết thúc; i bắt đầu từ 0, số hiển thị là i + 1.
             currentCustomWaveIndex = i;
 
             if (usesEnemies)
             {
+                // [BAO VE - GOI SPAWN ENEMY THUONG] Controller truyền số lượng và nhịp sinh; Instantiate thực tế nằm trong EnemySpawner.SpawnWave.
                 enemySpawner.StartEnemyWave(wave.enemyCount, wave.enemySpawnInterval);
             }
 
@@ -314,6 +328,7 @@ public class Level1Controller : MonoBehaviour
                 yield break;
             }
 
+            // [BAO VE - THONG BAO WAVE] Phát sự kiện cho banner và lịch Power-up sau khi các Spawner cần dùng đã khởi chạy.
             NotifyWaveStarted(i + 1, customWaves.Length, wave.name);
 
             if (usesFormations)
@@ -322,6 +337,7 @@ public class Level1Controller : MonoBehaviour
                 if (!formationGroupsComplete || IsFinished) yield break;
             }
 
+            // [BAO VE] Chờ các Spawner cần cho Wave dừng, sau đó kiểm tra IsWaveComplete; bị hủy giữa chừng không được coi là qua Wave.
             yield return new WaitUntil(() =>
                 (usesEnemies && enemySpawner == null)
                 || (usesAsteroids && asteroidSpawner == null)
@@ -341,6 +357,7 @@ public class Level1Controller : MonoBehaviour
 
             if (wave.delayAfterWave > 0f)
             {
+                // [BAO VE - CHUYEN WAVE TIEP THEO] Chờ thời gian nghỉ sau Wave rồi vòng for tăng i; chỉ tới Boss sau khi toàn bộ customWaves hoàn tất.
                 yield return new WaitForSeconds(wave.delayAfterWave);
             }
         }
@@ -348,6 +365,7 @@ public class Level1Controller : MonoBehaviour
         customWavesComplete = true;
     }
 
+    // [BAO VE] Chạy lần lượt từng nhóm Formation và chờ IsWaveComplete; nhóm bị hủy sẽ dừng chuỗi thay vì bỏ qua đến Boss.
     IEnumerator RunFormationGroups(WaveDefinition wave)
     {
         formationGroupsComplete = false;
@@ -355,6 +373,7 @@ public class Level1Controller : MonoBehaviour
         {
             while (Time.timeScale <= 0f && !IsFinished) yield return null;
             if (IsFinished) yield break;
+            // [BAO VE - GOI SPAWN FORMATION] Mỗi nhóm gửi cấu hình sang StartFormation; lệnh Instantiate Enemy nằm trong EnemyFormationSpawner.Run.
             if (formationSpawner == null || !formationSpawner.StartFormation(wave.formationGroups[i]))
             {
                 Debug.LogWarning("Formation group could not start; level sequence stopped safely.", this);
@@ -381,6 +400,7 @@ public class Level1Controller : MonoBehaviour
         if (IsFinished && !sequenceCancelled) StopSequence();
     }
 
+    // [BAO VE] Khi trận kết thúc hoặc controller bị tắt: dừng coroutine, hủy Formation và tắt Spawner để không sinh tiếp.
     void StopSequence()
     {
         sequenceCancelled = true;

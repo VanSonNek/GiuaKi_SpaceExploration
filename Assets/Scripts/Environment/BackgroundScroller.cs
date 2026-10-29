@@ -13,6 +13,7 @@ public class BackgroundScroller : MonoBehaviour
     private SpriteRenderer renderer2;
     private Camera mainCamera;
 
+    // [BAO VE] Xếp hai nền nối nhau theo chiều cao Sprite trong thế giới để tạo vòng cuộn liên tục.
     void Start()
     {
         if (background1 == null || background2 == null || background1 == background2)
@@ -47,6 +48,7 @@ public class BackgroundScroller : MonoBehaviour
         background2.position = background1.position + Vector3.up * backgroundHeight;
     }
 
+    // [BAO VE] Cuộn hai nền xuống theo deltaTime; nền ra hẳn dưới Camera được chuyển lên trên nền còn lại để tái sử dụng.
     void Update()
     {
         Vector3 movement = Vector3.down * scrollSpeed * Time.deltaTime;
@@ -61,6 +63,7 @@ public class BackgroundScroller : MonoBehaviour
         {
             if (renderer1.bounds.max.y <= screenBottom)
             {
+                // [BAO VE - TAI SU DUNG NEN] Đặt nền đã ra khỏi màn hình lên trên nền còn lại; không Instantiate nền mới mỗi frame.
                 background1.position = background2.position + Vector3.up * backgroundHeight;
             }
             else

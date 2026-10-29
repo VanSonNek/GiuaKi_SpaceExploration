@@ -24,9 +24,11 @@ public class AsteroidMovement : MonoBehaviour
         }
     }
 
+    // [BAO VE] Cho thiên thạch vừa rơi vừa xoay theo deltaTime; chỉ Destroy khi cạnh trên Sprite đã xuống dưới Camera.
     void Update()
     {
         transform.position += Vector3.down * moveSpeed * Time.deltaTime;
+        // [BAO VE - ASTEROID XOAY] Xoay quanh trục Z với số độ mỗi giây; chuyển động rơi nằm ở dòng phía trên và độc lập với góc xoay.
         transform.Rotate(0f, 0f, rotationSpeed * Time.deltaTime);
 
         float screenBottom = mainCamera.ViewportToWorldPoint(Vector3.zero).y;

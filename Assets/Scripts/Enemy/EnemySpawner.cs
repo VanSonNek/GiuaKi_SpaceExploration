@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// [BAO VE] Spawner Enemy kiểu thường; chỉ báo IsWaveComplete khi sinh đủ và tất cả Enemy đã bị hủy.
 public class EnemySpawner : MonoBehaviour
 {
     public GameObject enemyPrefab;
@@ -22,6 +23,7 @@ public class EnemySpawner : MonoBehaviour
         StartEnemyWave(4, spawnInterval);
     }
 
+    // [BAO VE] Nhận số lượng và khoảng nghỉ từ Level1Controller; kiểm tra Prefab, Camera và IsWaveRunning để tránh khởi chạy trùng.
     public void StartEnemyWave(int count, float interval)
     {
         if (!Application.isPlaying || !isActiveAndEnabled || IsWaveRunning)
@@ -58,9 +60,11 @@ public class EnemySpawner : MonoBehaviour
         StartCoroutine(SpawnWave(count, interval));
     }
 
+    // [BAO VE] Instantiate đủ count Enemy phía trên Camera tại X ngẫu nhiên; WaitForSeconds giãn thời gian sinh, WaitUntil chờ Enemy biến mất.
     IEnumerator SpawnWave(int count, float interval)
     {
         // Mỗi lần gọi chỉ sinh đủ số Enemy được yêu cầu.
+        // [BAO VE - SO LUONG ENEMY THUONG] count do controller truyền vào quyết định số lần sinh; enemyPrefab là mẫu dùng cho mọi lượt trong Wave này.
         for (int i = 0; i < count; i++)
         {
             Vector3 bottomLeft = mainCamera.ViewportToWorldPoint(Vector3.zero);
@@ -72,6 +76,7 @@ public class EnemySpawner : MonoBehaviour
                 enemyPrefab.transform.position.z
             );
 
+            // [BAO VE - SINH QUAI THUONG] Đây là dòng tạo Enemy thật từ enemyPrefab; bên dưới căn lại vị trí theo Bounds và Camera.
             GameObject enemy = Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
 
             // Lấy bounds của bản sao để kích thước đã tính cả Scale.
@@ -87,6 +92,7 @@ public class EnemySpawner : MonoBehaviour
                 yield break;
             }
 
+            // [BAO VE - TOA DO SINH QUAI] Chọn X ngẫu nhiên trong vùng đủ chứa thân Enemy; Y được đặt ngay phía trên Camera.
             float randomX = Random.Range(minX, maxX);
 
             // Đặt tâm sprite ở X ngẫu nhiên và cạnh dưới ngay trên màn hình.
@@ -108,12 +114,14 @@ public class EnemySpawner : MonoBehaviour
         }
 
         // Đã sinh đủ Enemy. Tiếp tục chờ chúng bị Destroy bằng bất kỳ cách nào.
+        // [BAO VE - KET THUC WAVE ENEMY] Sinh đủ chưa phải qua Wave: còn phải đợi tất cả Enemy do Spawner này tạo bị Destroy.
         yield return new WaitUntil(AllEnemiesDestroyed);
 
         IsWaveComplete = true;
         IsWaveRunning = false;
     }
 
+    // [BAO VE] Duyệt danh sách riêng của Wave; Unity so sánh object đã Destroy bằng null, kể cả Enemy bị bắn hoặc tự ra khỏi màn hình.
     bool AllEnemiesDestroyed()
     {
         foreach (GameObject enemy in spawnedEnemies)
@@ -128,6 +136,7 @@ public class EnemySpawner : MonoBehaviour
         return true;
     }
 
+    // [BAO VE] Dừng coroutine khi Spawner bị tắt; không đánh dấu Wave bị hủy giữa chừng là hoàn tất.
     void OnDisable()
     {
         // Wave bị dừng giữa chừng sẽ không được báo là đã hoàn tất.

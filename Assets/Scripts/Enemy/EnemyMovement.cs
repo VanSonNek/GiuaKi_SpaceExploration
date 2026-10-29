@@ -7,6 +7,7 @@ public enum EnemyMovementType
     Diagonal
 }
 
+// [BAO VE] Hỗ trợ Straight, Zigzag và Diagonal; moveSpeed điều khiển tốc độ bay xuống.
 public class EnemyMovement : MonoBehaviour
 {
     [Min(0f)]
@@ -26,6 +27,7 @@ public class EnemyMovement : MonoBehaviour
     private float elapsed;
     private float horizontalDirection;
 
+    // [BAO VE] Chọn CurrentMovementType một lần khi sinh; randomizeMovement quyết định dùng ngẫu nhiên hay cấu hình Prefab.
     void Start()
     {
         mainCamera = Camera.main;
@@ -46,11 +48,13 @@ public class EnemyMovement : MonoBehaviour
             && Random.value < 0.5f ? -1f : 1f;
     }
 
+    // [BAO VE] Bay xuống theo deltaTime và hủy Enemy khi toàn bộ Sprite ra dưới màn hình; kiểu khác Straight còn dịch chuyển ngang.
     void Update()
     {
         // Bay thẳng xuống theo trục Y của thế giới.
         transform.position += Vector3.down * moveSpeed * Time.deltaTime;
 
+        // [BAO VE - ENEMY BAY THANG] Straight chỉ dùng Vector3.down phía trên; Zigzag/Diagonal chạy thêm MoveHorizontally.
         if (CurrentMovementType != EnemyMovementType.Straight && Time.deltaTime > 0f)
         {
             MoveHorizontally();
@@ -65,6 +69,7 @@ public class EnemyMovement : MonoBehaviour
         }
     }
 
+    // [BAO VE] Zigzag dùng Sin quanh originX; Diagonal trôi ngang và đổi chiều ở biên, sau đó Clamp theo kích thước Sprite.
     void MoveHorizontally()
     {
         elapsed += Time.deltaTime;
@@ -83,11 +88,13 @@ public class EnemyMovement : MonoBehaviour
         Vector3 position = transform.position;
         if (CurrentMovementType == EnemyMovementType.Zigzag)
         {
+            // [BAO VE - ENEMY ZIGZAG] Sin tạo dao động ngang quanh originX; amplitude là độ rộng, frequency là số chu kỳ mỗi giây.
             position.x = originX + Mathf.Sin(elapsed * zigzagFrequency * Mathf.PI * 2f)
                 * zigzagAmplitude;
         }
         else
         {
+            // [BAO VE - ENEMY DIAGONAL] Kết hợp trôi ngang với bay xuống trong Update thành đường chéo; chạm biên thì đảo hướng ngang.
             position.x += horizontalDirection * driftSpeed * Time.deltaTime;
             if (position.x <= minX || position.x >= maxX)
             {

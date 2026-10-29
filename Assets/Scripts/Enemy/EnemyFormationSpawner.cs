@@ -11,6 +11,7 @@ public enum EnemyFormationType
 public enum FormationSpawnDirection { BothSides, Left, Right }
 
 [Serializable]
+// [BAO VE] Cấu hình tái sử dụng: loại đội hình, Prefab, số tàu, khoảng cách, thời gian giữ vị trí và kiểu di chuyển sau khi thả.
 public sealed class EnemyFormationSettings
 {
     public EnemyFormationType formationType;
@@ -34,6 +35,7 @@ public sealed class EnemyFormationSettings
     [Range(5f, 90f)] public float memberLifetime = 40f;
 
     // Snapshot prevents Inspector/caller changes halfway through a sequence.
+    // [BAO VE] Sao chép cấu hình và mảng visualVariants để một lượt spawn không bị đổi giữa chừng bởi bên gọi.
     public EnemyFormationSettings Snapshot()
     {
         var copy = (EnemyFormationSettings)MemberwiseClone();
@@ -42,7 +44,8 @@ public sealed class EnemyFormationSettings
     }
 }
 
-// Opt-in API for a future wave controller. Never auto-starts or persists across scenes.
+// Chỉ chạy khi controller gọi, không tự khởi động hoặc tồn tại xuyên Scene.
+// [BAO VE] Sinh Enemy theo sáu đội hình; Level1Controller gọi StartFormation, không tự sinh ở Start.
 public sealed class EnemyFormationSpawner : MonoBehaviour
 {
     public EnemyFormationSettings settings = new EnemyFormationSettings();
@@ -68,6 +71,7 @@ public sealed class EnemyFormationSpawner : MonoBehaviour
         return Validate(configuration);
     }
 
+    // [BAO VE] Kiểm tra cấu hình rồi chạy Run với bản sao; SpawnedCount và IsWaveRunning theo dõi tiến độ riêng của lượt này.
     public bool StartFormation(EnemyFormationSettings configuration)
     {
         if (!Application.isPlaying || !isActiveAndEnabled || IsWaveRunning) return false;
@@ -95,6 +99,7 @@ public sealed class EnemyFormationSpawner : MonoBehaviour
         return true;
     }
 
+    // [BAO VE] Kiểm tra Camera 2D, Prefab và thông số hữu hạn; chỉ nhận cấu hình có kích thước vừa vùng phía trên Camera.
     bool Validate(EnemyFormationSettings c)
     {
         if (c == null || view == null || !view.orthographic
@@ -147,6 +152,7 @@ public sealed class EnemyFormationSpawner : MonoBehaviour
         return result;
     }
 
+    // [BAO VE] Luân phiên Prefab gốc và visualVariants; giữ cặp cánh/hộ tống đối xứng cùng biến thể để đội hình dễ nhận biết.
     static GameObject PrefabForSlot(EnemyFormationSettings c, int index)
     {
         if (c.visualVariants == null || c.visualVariants.Length == 0) return c.enemyPrefab;
@@ -160,8 +166,10 @@ public sealed class EnemyFormationSpawner : MonoBehaviour
     static bool Positive(float v) => v > 0f && !float.IsNaN(v) && !float.IsInfinity(v);
     static bool NonNegative(float v) => v >= 0f && !float.IsNaN(v) && !float.IsInfinity(v);
 
+    // [BAO VE] Chia Enemy thành nhóm vừa Camera, chọn điểm vào, Instantiate rồi gắn EnemyFormationMember; có thời gian chờ giữa tàu và nhóm.
     IEnumerator Run(EnemyFormationSettings c)
     {
+        // [BAO VE - SO LUONG ENEMY FORMATION] enemyCount là tổng Enemy của nhóm cấu hình; BuildSlots có thể chia thành nhiều lượt nhỏ khi Camera hẹp.
         while (SpawnedCount < c.enemyCount)
         {
             // TimeScale=0 can still execute a freshly started coroutine: wait before spawn.
@@ -194,11 +202,13 @@ public sealed class EnemyFormationSpawner : MonoBehaviour
             for (int i = 0; i < slots.Count; i++)
             {
                 while (Time.timeScale <= 0f) yield return null;
+                // [BAO VE - DICH DEN FORMATION] Đích đội hình nằm ở vùng phía trên Camera; footprintOffset bù pivot và Collider lệch tâm.
                 Vector3 destination = new Vector3(centerX + slots[i].x,
                     top.y - c.clearance - footprintSize.y * 0.5f + slots[i].y - maxY,
                     c.enemyPrefab.transform.position.z) - footprintOffset;
                 Vector3 spawn = destination;
                 float exit = 0f;
+                // [BAO VE - SIDE ATTACK DIEM VAO] Điểm sinh đặt ngoài cạnh trái/phải, khác các Formation còn lại đi từ phía trên.
                 if (c.formationType == EnemyFormationType.SideAttack)
                 {
                     bool fromLeft = c.spawnDirection == FormationSpawnDirection.Left
@@ -217,6 +227,7 @@ public sealed class EnemyFormationSpawner : MonoBehaviour
 
                 float blockedTime = 0f;
                 int relocationAttempts = 0;
+                // [BAO VE] Nếu điểm sinh bị chặn thì chờ và thử dời ra xa ngoài Camera; giới hạn số lần thử để không mắc kẹt vô hạn.
                 while (!SpawnIsClear(spawn))
                 {
                     blockedTime += Time.deltaTime;
@@ -239,6 +250,7 @@ public sealed class EnemyFormationSpawner : MonoBehaviour
                     yield return null;
                 }
                 while (Time.timeScale <= 0f) yield return null;
+                // [BAO VE - SINH QUAI FORMATION] Đây là dòng tạo Enemy thật: PrefabForSlot chọn mẫu, spawn là tọa độ đã tính và kiểm tra an toàn.
                 GameObject enemy = Instantiate(PrefabForSlot(c, SpawnedCount), spawn, Quaternion.identity);
                 EnemyFormationMember member = enemy.AddComponent<EnemyFormationMember>();
                 member.Initialize(view, destination, c.entrySpeed, c.memberLifetime,
@@ -252,6 +264,7 @@ public sealed class EnemyFormationSpawner : MonoBehaviour
             }
             // Each entry has a finite scaled-time lifetime, even if obstructed/destroyed.
             while (!AllEntered(group)) yield return null;
+            // [BAO VE - FORMATION GIU VA THA] Chờ các tàu vào đích rồi giữ holdDuration; EnemyShooting vẫn hoạt động, sau đó Release để rời vị trí.
             if (c.holdDuration > 0f) yield return new WaitForSeconds(c.holdDuration);
             while (Time.timeScale <= 0f) yield return null;
             foreach (EnemyFormationMember member in group)
@@ -259,11 +272,13 @@ public sealed class EnemyFormationSpawner : MonoBehaviour
             if (SpawnedCount < c.enemyCount && c.groupInterval > 0f)
                 yield return new WaitForSeconds(c.groupInterval);
         }
+        // [BAO VE] Chỉ hoàn tất Formation khi mọi thành viên đã bị hủy, không chỉ khi đã sinh đủ Enemy.
         while (members.Exists(m => m != null)) yield return null;
         IsWaveComplete = true;
         IsWaveRunning = false;
     }
 
+    // [BAO VE] Tính các vị trí V, hai cột, đánh bên hông, nhóm nối tiếp, hộ tống hoặc lưới giữ vị trí; spacing có tính kích thước tàu.
     List<Vector2> BuildSlots(EnemyFormationSettings c, int remaining)
     {
         Vector3 bottom = view.ViewportToWorldPoint(Vector3.zero);
@@ -276,6 +291,7 @@ public sealed class EnemyFormationSpawner : MonoBehaviour
         int columns = Mathf.Max(1, Mathf.FloorToInt(width / dx) + 1);
         var slots = new List<Vector2>();
         int count;
+        // [BAO VE - CHON KIEU FORMATION] Các nhánh bên dưới chỉ xây tọa độ slot; GameObject chỉ thực sự được tạo trong Run.
         switch (c.formationType)
         {
             case EnemyFormationType.VFormation:
@@ -321,6 +337,7 @@ public sealed class EnemyFormationSpawner : MonoBehaviour
         return slots;
     }
 
+    // [BAO VE] Kiểm tra Bounds thành viên và Physics2D.OverlapBoxAll để không sinh chồng Player hoặc Enemy tại điểm vào.
     bool SpawnIsClear(Vector3 position)
     {
         Bounds candidate = new Bounds(position + footprintOffset, footprintSize);
@@ -346,6 +363,7 @@ public sealed class EnemyFormationSpawner : MonoBehaviour
             CancelFormation();
     }
 
+    // [BAO VE] Dừng coroutine, hủy các thành viên đang theo dõi và xóa cờ hoàn tất khi trận kết thúc hoặc Spawner bị tắt.
     public void CancelFormation()
     {
         StopAllCoroutines();

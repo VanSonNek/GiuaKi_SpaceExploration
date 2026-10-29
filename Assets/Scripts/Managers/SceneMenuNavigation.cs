@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 
+// [BAO VE] Điều hướng Main Menu, chọn Level và quay về Menu bằng tên Scene; không lưu HP hoặc Score giữa các Scene.
 public class SceneMenuNavigation : MonoBehaviour
 {
     [SerializeField] private GameObject mainMenuPanel;
@@ -19,6 +20,7 @@ public class SceneMenuNavigation : MonoBehaviour
         }
     }
 
+    // [BAO VE] PLAY/LEVEL 1 tải GameScene; LoadLevel2 và LoadLevel3 tải các Scene tương ứng.
     public void Play()
     {
         LoadScene("GameScene");
@@ -34,11 +36,13 @@ public class SceneMenuNavigation : MonoBehaviour
         LoadScene("Level3Scene");
     }
 
+    // [BAO VE] Callback MAIN MENU trên màn kết quả, dùng LoadScene chung để khôi phục thời gian trước khi chuyển Scene.
     public void ReturnToMainMenu()
     {
         LoadScene("MainMenuScene");
     }
 
+    // [BAO VE - MO CHON LEVEL] Nút SELECT LEVEL gọi hàm này để ẩn menu chính và hiện danh sách ba màn.
     public void ShowLevelSelect()
     {
         SetMenuPanels(false);
@@ -49,6 +53,7 @@ public class SceneMenuNavigation : MonoBehaviour
         SetMenuPanels(true);
     }
 
+    // [BAO VE] Bật Main Menu hoặc khu vực chọn Level theo showMainMenu, đồng thời xóa lựa chọn cũ trong EventSystem.
     void SetMenuPanels(bool showMainMenu)
     {
         if (mainMenuPanel == null || levelSelectPanel == null || isLoading)
@@ -65,6 +70,7 @@ public class SceneMenuNavigation : MonoBehaviour
         }
     }
 
+    // [BAO VE] Kiểm tra Scene đã bật trong Build Settings, chặn click lặp, đặt timeScale = 1 rồi thay Scene bằng chế độ Single.
     void LoadScene(string sceneName)
     {
         if (!Application.isPlaying || isLoading)
@@ -80,9 +86,11 @@ public class SceneMenuNavigation : MonoBehaviour
 
         isLoading = true;
         Time.timeScale = 1f;
+        // [BAO VE - MENU LOAD SCENE] PLAY, chọn Level và MAIN MENU cùng đi qua lệnh tải Scene này sau kiểm tra và reset thời gian.
         SceneManager.LoadScene(sceneName, LoadSceneMode.Single);
     }
 
+    // [BAO VE] Application.Quit chỉ được biên dịch ngoài Unity Editor; bấm QUIT trong Editor không ép đóng Editor.
     public void QuitGame()
     {
         if (!Application.isPlaying || isLoading)

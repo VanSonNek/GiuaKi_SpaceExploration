@@ -2,6 +2,7 @@ using UnityEngine;
 
 // Runtime-only steering. The prefab's movement and weapon settings stay intact.
 [RequireComponent(typeof(EnemyMovement), typeof(Enemy), typeof(SpriteRenderer))]
+// [BAO VE] Điều khiển từng thành viên qua Entering, Holding, Released hoặc Exiting; không viết lại EnemyShooting.
 public sealed class EnemyFormationMember : MonoBehaviour
 {
     public enum FlightState { Entering, Holding, Released, Exiting }
@@ -18,12 +19,14 @@ public sealed class EnemyFormationMember : MonoBehaviour
     private float exitDirection;
     private bool initialized;
 
+    // [BAO VE] Tạm tắt EnemyMovement để MoveTowards đưa tàu vào đích; lưu thời gian sống và hướng thoát từ Spawner.
     public void Initialize(Camera camera, Vector3 destination, float speed, float lifetime,
         float horizontalExit, bool overrideMovement, EnemyMovementType profile)
     {
         movement = GetComponent<EnemyMovement>();
         // Called by the spawner before the first Start: movement initializes at release.
         movement.enabled = false;
+        // [BAO VE - FORMATION MOVEMENT PROFILE] Nếu bật overrideMovement thì gán kiểu bay được cấu hình và tắt chọn ngẫu nhiên; vẫn giữ các thông số bắn của Enemy.
         if (overrideMovement)
         {
             movement.randomizeMovement = false;
@@ -38,13 +41,16 @@ public sealed class EnemyFormationMember : MonoBehaviour
         initialized = true;
     }
 
+    // [BAO VE] Sau thời gian giữ vị trí, bật lại EnemyMovement hoặc chuyển sang bay ngang ra ngoài theo exitDirection.
     public void Release()
     {
         if (!initialized || State != FlightState.Holding) return;
+        // [BAO VE - FORMATION THOAT MAN HINH] Không có hướng thoát ngang thì bật EnemyMovement; có hướng thì Member tự đưa tàu ra cạnh bên.
         State = exitDirection == 0f ? FlightState.Released : FlightState.Exiting;
         movement.enabled = State == FlightState.Released;
     }
 
+    // [BAO VE] Dùng deltaTime nên Pause dừng bay và tuổi thọ; hủy khi hết lifetime hoặc thành viên đã rời màn hình.
     void Update()
     {
         if (!initialized || Time.deltaTime <= 0f) return;
@@ -80,6 +86,7 @@ public sealed class EnemyFormationMember : MonoBehaviour
         }
     }
 
+    // [BAO VE] Gộp Bounds Sprite và Collider, kể cả offset/scale, để Spawner tính khoảng cách tránh chồng tàu.
     public static Bounds MeasureFootprint(GameObject root)
     {
         Bounds result = root.GetComponent<SpriteRenderer>().bounds;

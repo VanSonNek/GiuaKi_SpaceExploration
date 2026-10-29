@@ -110,7 +110,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c3817f85133557c7b3cc8ae8c33ffa4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Boss
-  maxHealth: 25
+  maxHealth: 70
   contactDamage: 1
   scoreValue: 1000
 --- !u!114 &6705849406103441513
@@ -203,6 +203,13 @@ MonoBehaviour:
   phase2FireRate: 1.8
   phase2SpreadAngle: 26
   phaseTransitionDelay: 0.35
+  useAdvancedHealthCycles: 0
+  phase2AttackCycle: 
+  sweepWarningTime: 0.5
+  sweepShotCount: 5
+  sweepHalfAngle: 28
+  sweepShotInterval: 0.28
+  aimedBurstInterval: 0.35
 --- !u!114 &6107023877372112829
 MonoBehaviour:
   m_ObjectHideFlags: 0

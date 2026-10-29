@@ -23,6 +23,7 @@ public class DamageFlash : MonoBehaviour
         }
     }
 
+    // [BAO VE] Nháy màu Sprite khi nhận sát thương; dừng coroutine cũ nhưng giữ normalColor gốc để trúng liên tiếp vẫn khôi phục đúng màu.
     public void Flash()
     {
         if (spriteRenderer == null || !isActiveAndEnabled)
@@ -40,10 +41,12 @@ public class DamageFlash : MonoBehaviour
             normalColor = spriteRenderer.color;
         }
 
+        // [BAO VE - HIEU UNG TRUNG DAN] Chỉ đổi màu Sprite rồi RestoreColor sau flashDuration; hiệu ứng không trừ HP, HP do TakeDamage xử lý.
         spriteRenderer.color = flashColor;
         flashCoroutine = StartCoroutine(RestoreColor());
     }
 
+    // [BAO VE] Chờ flashDuration theo thời gian game rồi trả Sprite về màu ban đầu; OnDisable cũng dọn hiệu ứng còn dở.
     IEnumerator RestoreColor()
     {
         yield return new WaitForSeconds(flashDuration);

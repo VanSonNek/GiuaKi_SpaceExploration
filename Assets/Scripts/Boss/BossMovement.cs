@@ -1,5 +1,6 @@
 using UnityEngine;
 
+// [BAO VE] Cho Boss bay vào vùng chiến đấu rồi di chuyển ngang; IsInPosition cho BossShooting biết khi nào được bắn.
 public class BossMovement : MonoBehaviour
 {
     [Min(0f)]
@@ -18,6 +19,7 @@ public class BossMovement : MonoBehaviour
     private SpriteRenderer spriteRenderer;
     private float horizontalDirection = 1f;
 
+    // [BAO VE] Lấy Camera/Sprite và đưa toàn bộ thân Boss lên ngoài cạnh trên để bắt đầu bay vào màn hình.
     void Start()
     {
         mainCamera = Camera.main;
@@ -35,6 +37,7 @@ public class BossMovement : MonoBehaviour
         transform.position += Vector3.up * (screenTop + 0.1f - spriteRenderer.bounds.min.y);
     }
 
+    // [BAO VE] MoveTowards đưa Boss tới battleHeight; sau đó bay ngang, Clamp và đổi hướng tại biên theo Bounds gồm cả pivot.
     void Update()
     {
         Vector3 bottomLeft = mainCamera.ViewportToWorldPoint(Vector3.zero);
@@ -62,6 +65,7 @@ public class BossMovement : MonoBehaviour
                             - centerOffset.y;
 
             // MoveTowards giúp Boss dừng đúng vị trí, không đi quá đích.
+            // [BAO VE - BOSS BAY VAO] Tiến dần tới độ cao chiến đấu theo entrySpeed; IsInPosition chỉ true khi đã tới đích.
             position.y = Mathf.MoveTowards(position.y, targetY, entrySpeed * Time.deltaTime);
             IsInPosition = Mathf.Approximately(position.y, targetY);
         }
@@ -69,6 +73,7 @@ public class BossMovement : MonoBehaviour
         {
             position.x += horizontalDirection * moveSpeed * Time.deltaTime;
 
+            // [BAO VE - BOSS DOI HUONG] Chạm biên phải thì bay trái, chạm biên trái thì bay phải; minX/maxX đã tính toàn bộ kích thước Sprite.
             if (position.x >= maxX)
             {
                 position.x = maxX;

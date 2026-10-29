@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(RectTransform), typeof(CanvasGroup))]
+// [BAO VE] Banner Wave/Boss Warning chỉ trình bày thông báo từ controller, không điều khiển tiến trình Wave.
 public class WaveAnnouncementUI : MonoBehaviour
 {
     [SerializeField] private Level1Controller levelController;
@@ -24,6 +25,7 @@ public class WaveAnnouncementUI : MonoBehaviour
     private Vector2 restingPosition;
     private Coroutine animation;
 
+    // [BAO VE] Nghe WaveStarted/BossWarningStarted và Player.Died; CanvasGroup không chặn raycast của nút UI bên dưới.
     void OnEnable()
     {
         banner = GetComponent<RectTransform>();
@@ -53,14 +55,17 @@ public class WaveAnnouncementUI : MonoBehaviour
         }
     }
 
+    // [BAO VE - WAVE ANNOUNCEMENT] Callback nhận WaveStarted rồi hiển thị số Wave/tổng Wave và tên do controller truyền sang.
     void ShowWave(int number, int total, string waveName)
     {
         Show("WAVE " + number + " / " + total, waveName, waveDuration, false);
     }
 
+    // [BAO VE] Dùng đúng thời gian nghỉ existingDelay do controller cung cấp; không cộng thêm thời gian chờ sinh Boss.
     void ShowBossWarning(float existingDelay)
     {
         // Use the controller's existing rest; this UI never delays Boss spawning.
+        // [BAO VE - BOSS WARNING UI] Đây là dòng hiện banner báo Boss; cảnh báo kỹ năng ngắm/quét trên thân Boss là hệ thống riêng trong BossShooting.
         Show("WARNING", "BOSS INCOMING", existingDelay, true);
     }
 
@@ -85,6 +90,7 @@ public class WaveAnnouncementUI : MonoBehaviour
         animation = StartCoroutine(Animate(duration));
     }
 
+    // [BAO VE] Dùng deltaTime để fade và trượt banner trong duration; hiệu ứng dừng theo Pause và kết thúc khi trận đã xong.
     IEnumerator Animate(float duration)
     {
         float elapsed = 0f;
@@ -133,6 +139,7 @@ public class WaveAnnouncementUI : MonoBehaviour
         }
     }
 
+    // [BAO VE] Gỡ sự kiện và dừng animation để banner không còn callback hoặc coroutine sau khi Scene/UI bị tắt.
     void OnDisable()
     {
         if (subscribedController != null)

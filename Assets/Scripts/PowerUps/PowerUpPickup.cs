@@ -9,6 +9,7 @@ public enum PowerUpType
 
 [DisallowMultipleComponent]
 [RequireComponent(typeof(SpriteRenderer), typeof(BoxCollider2D), typeof(Rigidbody2D))]
+// [BAO VE] Vật phẩm lưu Type, rơi theo fallSpeed và báo Collected; bản thân Pickup không trực tiếp tăng súng hoặc hồi HP.
 public class PowerUpPickup : MonoBehaviour
 {
     [SerializeField] private PowerUpType type;
@@ -34,6 +35,7 @@ public class PowerUpPickup : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
+    // [BAO VE] Đặt thời gian tự hủy maximumLifetime; Destroy có thời gian chờ dùng thời gian game nên Pause cũng dừng đếm.
     void Start()
     {
         if (mainCamera == null) mainCamera = Camera.main;
@@ -41,6 +43,7 @@ public class PowerUpPickup : MonoBehaviour
         Destroy(gameObject, maximumLifetime);
     }
 
+    // [BAO VE] Cho vật phẩm rơi xuống theo deltaTime, dừng khi Pause và hủy khi đã ra ngoài vùng chơi.
     void Update()
     {
         if (Time.timeScale <= 0f || IsCollected) return;
@@ -56,6 +59,7 @@ public class PowerUpPickup : MonoBehaviour
         }
     }
 
+    // [BAO VE] Chỉ nhận Player còn sống thuộc owner; đánh dấu IsCollected, tắt Collider rồi phát Collected và hủy để tránh nhặt lặp.
     void OnTriggerEnter2D(Collider2D other)
     {
         if (IsCollected || owner == null || !owner.CanCollect || Time.timeScale <= 0f) return;
@@ -64,11 +68,12 @@ public class PowerUpPickup : MonoBehaviour
         if (player == null || player != owner.Player || player.CurrentHealth <= 0) return;
 
         // Set the guard before invoking listeners, including multiple Player colliders.
+        // [BAO VE - VAT PHAM CHAN NHAT TRUNG] Đặt cờ trước khi gọi listener và tắt Collider ngay sau đó, tránh nhiều Collider Player cùng nhận một vật phẩm.
         IsCollected = true;
         GetComponent<BoxCollider2D>().enabled = false;
         try
         {
-            // TASK 08F-1 only announces collection. No weapon/health effect is applied.
+            // [BAO VE - SU KIEN NHAT] Manager nhận Collected rồi báo PickupCollected; PlayerPowerUpEffects mới áp dụng tăng súng hoặc hồi HP.
             Collected?.Invoke(this, player);
         }
         finally
@@ -77,6 +82,7 @@ public class PowerUpPickup : MonoBehaviour
         }
     }
 
+    // [BAO VE] Báo owner bỏ vật phẩm khỏi danh sách theo dõi, kể cả khi hết thời gian hoặc rơi khỏi màn hình.
     void OnDestroy()
     {
         if (owner != null) owner.ForgetPickup(this);

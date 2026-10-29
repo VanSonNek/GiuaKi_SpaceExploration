@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// [BAO VE] Sinh thiên thạch thường hoặc theo hành lang trống; Level1Controller chờ IsWaveComplete để chuyển Wave.
 public class AsteroidSpawner : MonoBehaviour
 {
     public GameObject asteroidPrefab;
@@ -31,6 +32,7 @@ public class AsteroidSpawner : MonoBehaviour
         StartAsteroidWave(asteroidCount, spawnInterval);
     }
 
+    // [BAO VE] Nhận số lượng và khoảng nghỉ, kiểm tra Prefab/Camera rồi chạy coroutine; IsWaveRunning chặn Wave trùng.
     public void StartAsteroidWave(int count, float interval)
     {
         if (!Application.isPlaying || !isActiveAndEnabled || IsWaveRunning)
@@ -70,6 +72,7 @@ public class AsteroidSpawner : MonoBehaviour
         StartCoroutine(SpawnWave(count, interval));
     }
 
+    // [BAO VE] Instantiate count thiên thạch phía trên Camera, ngẫu nhiên X và scale; sinh đủ vẫn chờ tất cả bị hủy.
     IEnumerator SpawnWave(int count, float interval)
     {
         for (int i = 0; i < count; i++)
@@ -83,6 +86,7 @@ public class AsteroidSpawner : MonoBehaviour
                 asteroidPrefab.transform.position.z
             );
 
+            // [BAO VE - SINH ASTEROID THUONG] Dòng sinh thiên thạch thường; sau đó áp dụng Scale ngẫu nhiên và căn lại điểm vào phía trên Camera.
             GameObject asteroid = Instantiate(asteroidPrefab, spawnPosition, Quaternion.identity);
             float scaleMultiplier = Random.Range(0.8f, 1.3f);
             asteroid.transform.localScale = asteroidPrefab.transform.localScale * scaleMultiplier;
@@ -157,6 +161,7 @@ public class AsteroidSpawner : MonoBehaviour
         return true;
     }
 
+    // [BAO VE] Chạy Wave có khoảng trống cho Player; centers và laneWidth quyết định vị trí, độ rộng hành lang.
     public bool StartCorridorWave(int count, float interval, float laneWidth, float[] centers)
     {
         if (!Application.isPlaying || !isActiveAndEnabled || IsWaveRunning) return false;
@@ -190,6 +195,7 @@ public class AsteroidSpawner : MonoBehaviour
         return radius * 1.3f;
     }
 
+    // [BAO VE] Tính các vị trí sinh tránh hành lang; MaximumRotationRadius tính cả kích thước lúc xoay và scale lớn nhất.
     float[] CorridorPositions(float normalizedCenter, float laneWidth)
     {
         float left = mainCamera.ViewportToWorldPoint(Vector3.zero).x;
@@ -211,6 +217,7 @@ public class AsteroidSpawner : MonoBehaviour
         return null;
     }
 
+    // [BAO VE] Sinh từng nhóm hữu hạn theo các tâm hành lang luân phiên; Pause dừng sinh và chỉ hoàn tất sau khi hết thiên thạch.
     IEnumerator SpawnCorridor(int count, float interval, float laneWidth, float[] centers)
     {
         int group = 0;
@@ -230,6 +237,7 @@ public class AsteroidSpawner : MonoBehaviour
             for (int i = 0; i < positions.Length && SpawnedCount < count; i++)
             {
                 float top = mainCamera.ViewportToWorldPoint(Vector3.one).y;
+                // [BAO VE - SINH ASTEROID HANH LANG] Dòng sinh thiên thạch theo vị trí tránh hành lang; cùng dùng asteroidPrefab, không sửa HP hay sát thương.
                 GameObject asteroid = Instantiate(asteroidPrefab,
                     new Vector3(positions[i], top + MaximumRotationRadius() + 0.1f,
                         asteroidPrefab.transform.position.z), Quaternion.identity);

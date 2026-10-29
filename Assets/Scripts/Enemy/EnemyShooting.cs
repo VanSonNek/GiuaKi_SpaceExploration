@@ -1,6 +1,7 @@
 using UnityEngine;
 
 [RequireComponent(typeof(Enemy), typeof(SpriteRenderer))]
+// [BAO VE] Cho Enemy bắn bằng Prefab có BossBullet; shootingChance chọn tàu biết bắn, fireInterval là khoảng nghỉ giữa các loạt.
 public class EnemyShooting : MonoBehaviour
 {
     public GameObject bulletPrefab;
@@ -24,6 +25,7 @@ public class EnemyShooting : MonoBehaviour
     private float nextFireTime;
     private float bulletHalfHeight;
 
+    // [BAO VE] Chọn IsShooter và SingleShot/SpreadShot một lần cho mỗi Enemy; initialDelay trì hoãn phát đầu.
     void Start()
     {
         enemy = GetComponent<Enemy>();
@@ -41,6 +43,7 @@ public class EnemyShooting : MonoBehaviour
         }
 
         // Decide once per spawned Enemy; Update never rerolls this probability.
+        // [BAO VE - ENEMY XAC SUAT BAN] Chỉ bốc xác suất một lần lúc Start; không bốc lại mỗi frame để biến mọi Enemy thành tàu bắn.
         IsShooter = canShoot && Random.value < shootingChance;
         CurrentPattern = spreadChance > 0f && Random.value < spreadChance
             ? AttackPattern.SpreadShot : AttackPattern.SingleShot;
@@ -48,6 +51,7 @@ public class EnemyShooting : MonoBehaviour
         nextFireTime = Time.time + initialDelay;
     }
 
+    // [BAO VE] Chỉ bắn khi Enemy còn sống, hết thời gian chờ và thân tàu đã vào đủ trong Camera; FirePattern tạo đạn dưới thân tàu.
     void Update()
     {
         if (!canShoot || !IsShooter || !enemy.IsAlive || Time.timeScale <= 0f
@@ -70,6 +74,7 @@ public class EnemyShooting : MonoBehaviour
             return;
         }
 
+        // [BAO VE - SINH DAN ENEMY] Đây là lệnh tạo đạn thù qua BossBullet; dùng bulletPrefab, CurrentPattern và tốc độ riêng của Enemy.
         BossBullet.FirePattern(bulletPrefab, muzzle, CurrentPattern, spreadAngle,
             bulletSpeed, owner, true);
         BurstsFired++;

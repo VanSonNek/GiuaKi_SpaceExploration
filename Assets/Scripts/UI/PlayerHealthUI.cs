@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
+// [BAO VE] Hiển thị HP Player bằng Slider; maxValue lấy từ MaxHealth, value lấy từ CurrentHealth.
 public class PlayerHealthUI : MonoBehaviour
 {
     public PlayerHealth playerHealth;
@@ -28,6 +29,7 @@ public class PlayerHealthUI : MonoBehaviour
         healthSlider.value = playerHealth.CurrentHealth;
     }
 
+    // [BAO VE] Đọc HP mỗi frame để thanh máu theo kịp sát thương và hồi máu; Player đã Destroy thì hiển thị 0.
     void Update()
     {
         if (healthSlider == null)
@@ -36,6 +38,7 @@ public class PlayerHealthUI : MonoBehaviour
         }
 
         // Unity coi reference tới Player đã bị Destroy là null.
+        // [BAO VE - CAP NHAT HP UI] HP hiện được đọc trong Update; không có HealthChanged event trong PlayerHealth.
         healthSlider.value = playerHealth != null ? playerHealth.CurrentHealth : 0f;
     }
 }
